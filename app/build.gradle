@@ -108,4 +108,7 @@ dependencies {
     //lottie
     implementation 'com.airbnb.android:lottie:5.0.2'
 
+    //tick meter
+    implementation 'com.robinhood.ticker:ticker:2.0.4'
+
 }
