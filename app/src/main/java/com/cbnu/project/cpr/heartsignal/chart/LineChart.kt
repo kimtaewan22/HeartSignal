@@ -1,14 +1,12 @@
-package com.google.mediapipe.examples.poselandmarker.chart
+package com.cbnu.project.cpr.heartsignal.chart
 
 import android.graphics.Color
-import androidx.core.content.ContextCompat.getColor
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.google.mediapipe.examples.poselandmarker.R
 
 class LineChart {
 

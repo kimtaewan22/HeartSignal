@@ -15,10 +15,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".auth.AuthLoginActivity"
+            android:name="com.cbnu.project.cpr.heartsignal.auth.AuthLoginActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.cbnu.project.cpr.heartsignal.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

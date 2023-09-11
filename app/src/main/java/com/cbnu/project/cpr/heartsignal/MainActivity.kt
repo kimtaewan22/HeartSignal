@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package com.google.mediapipe.examples.poselandmarker
+package com.cbnu.project.cpr.heartsignal
 
 import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
-import com.google.mediapipe.examples.poselandmarker.databinding.ActivityMainBinding
+import com.cbnu.project.cpr.heartsignal.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var activityMainBinding: ActivityMainBinding

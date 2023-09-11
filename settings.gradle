@@ -15,5 +15,5 @@ dependencyResolutionManagement {
 
     }
 }
-rootProject.name = "Pose Landmarker"
+rootProject.name = "Heart Signal"
 include ':app'

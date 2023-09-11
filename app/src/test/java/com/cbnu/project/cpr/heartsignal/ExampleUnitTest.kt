@@ -1,4 +1,4 @@
-package com.google.mediapipe.examples.poselandmarker
+package com.cbnu.project.cpr.heartsignal
 
 import org.junit.Test
 

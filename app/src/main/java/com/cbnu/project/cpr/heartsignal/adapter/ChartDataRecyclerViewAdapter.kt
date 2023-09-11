@@ -1,12 +1,12 @@
-package com.google.mediapipe.examples.poselandmarker.adapter
+package com.cbnu.project.cpr.heartsignal.adapter
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.cbnu.project.cpr.heartsignal.R
 import com.github.mikephil.charting.data.Entry
-import com.google.mediapipe.examples.poselandmarker.R
 
 class ChartDataRecyclerViewAdapter(private val dataList: List<Entry>) :
     RecyclerView.Adapter<ChartDataRecyclerViewAdapter.ViewHolder>() {

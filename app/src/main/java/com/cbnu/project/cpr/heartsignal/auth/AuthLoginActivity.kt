@@ -1,8 +1,8 @@
-package com.google.mediapipe.examples.poselandmarker.auth
+package com.cbnu.project.cpr.heartsignal.auth
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.google.mediapipe.examples.poselandmarker.R
+import com.cbnu.project.cpr.heartsignal.R
 
 class AuthLoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

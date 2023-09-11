@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.mediapipe.examples.poselandmarker.fragment
+package com.cbnu.project.cpr.heartsignal.fragment
 
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -48,11 +47,11 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IFillFormatter
-import com.google.mediapipe.examples.poselandmarker.MainViewModel
-import com.google.mediapipe.examples.poselandmarker.PoseLandmarkerHelper
-import com.google.mediapipe.examples.poselandmarker.R
-import com.google.mediapipe.examples.poselandmarker.adapter.ChartDataRecyclerViewAdapter
-import com.google.mediapipe.examples.poselandmarker.databinding.FragmentCameraBinding
+import com.cbnu.project.cpr.heartsignal.MainViewModel
+import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
+import com.cbnu.project.cpr.heartsignal.R
+import com.cbnu.project.cpr.heartsignal.adapter.ChartDataRecyclerViewAdapter
+import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
