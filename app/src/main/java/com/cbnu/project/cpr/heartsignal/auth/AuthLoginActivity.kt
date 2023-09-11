@@ -1,12 +1,15 @@
 package com.cbnu.project.cpr.heartsignal.auth
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.cbnu.project.cpr.heartsignal.R
+import androidx.appcompat.app.AppCompatActivity
+import com.cbnu.project.cpr.heartsignal.databinding.ActivityAuthLoginBinding
 
 class AuthLoginActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityAuthLoginBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_auth_login)
+        binding = ActivityAuthLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 }
