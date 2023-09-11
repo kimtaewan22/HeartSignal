@@ -17,13 +17,13 @@ package com.cbnu.project.cpr.heartsignal.fragment
 
 import android.animation.Animator
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,18 +48,26 @@ import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.adapter.ChartDataRecyclerViewAdapter
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
+import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IFillFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.robinhood.ticker.TickerUtils
+import com.robinhood.ticker.TickerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Random
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -102,8 +110,17 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private lateinit var chartDataList: ArrayList<Entry>
     private lateinit var recyclerViewAdapter: ChartDataRecyclerViewAdapter
 
-    //lottie
+    // lottie
     private lateinit var lottieAnimationView: LottieAnimationView
+
+    // horizontal bar
+    private lateinit var horizontalBarChart: HorizontalBarChart
+    private val bar_entries = ArrayList<BarEntry>()
+    private lateinit var barDataSet: BarDataSet
+    private lateinit var barData : BarData
+
+    //tickmeter
+
 
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
@@ -163,9 +180,15 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     ): View {
         _fragmentCameraBinding =
             FragmentCameraBinding.inflate(inflater, container, false)
+
+
+        //line
         lineChart = fragmentCameraBinding.lineChart
         recyclerView = fragmentCameraBinding.recyclerView
         chartDataList = ArrayList()
+
+        // horizontal
+        horizontalBarChart = fragmentCameraBinding.horizontalBar
         // RecyclerView 설정
         recyclerViewAdapter = ChartDataRecyclerViewAdapter(chartDataList)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -174,14 +197,20 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.mp_beep)
         // lottie
         lottieAnimationView = fragmentCameraBinding.lottie
+        //tickerView
 
-        showLottieAnimation()
-        showLineChart()
+
+
+
+        showChart()
         return fragmentCameraBinding.root
     }
 
+
+
     private fun showLottieAnimation() {
         lottieAnimationView.repeatCount = 60
+        lottieAnimationView.backgroundTintMode
         lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
 
@@ -194,7 +223,27 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
             }
             override fun onAnimationRepeat(animation: Animator) {
+                // 현재 프레임을 로그로 출력합니다.
+                Log.d("LottieAnimation", "Current Time: $currentTime")
 
+//                 원하는 프레임에서 이미지를 변경하려면 여기에서 조건문을 사용하여 작업을 수행하면 됩니다.
+                if (currentTime in 15f..30f) {
+                    lottieAnimationView.setAnimation(R.raw.heart_bad2)
+                    lottieAnimationView.repeatCount = 30
+                    lottieAnimationView.playAnimation()
+                }
+                else if (currentTime in 30f..45f)
+                {
+                    lottieAnimationView.setAnimation(R.raw.heart_bad3)
+                    lottieAnimationView.repeatCount = 30
+                    lottieAnimationView.playAnimation()
+                }
+                else if (currentTime in 45f..60f)
+                {
+                    lottieAnimationView.setAnimation(R.raw.heart_good1)
+                    lottieAnimationView.repeatCount = 30
+                    lottieAnimationView.playAnimation()
+                }
             }
         })
     }
@@ -549,10 +598,18 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 //        }
 //    }
 
-    private fun showLineChart() {
+    private fun showChart() {
         // 그래프 설정 및 초기 데이터 채우기
         generateInitialData()
-        setupChart()
+        setUpBarChartData()
+        setupLineChart()
+        createChartData()
+
+        // 60부터 1까지의 숫자 리스트 생성
+        // 60부터 1까지의 숫자 리스트 생성
+
+
+
 
 
 //        // 실시간 업데이트를 위한 핸들러 설정
@@ -575,11 +632,14 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
         // 코루틴을 사용한 실시간 업데이트
         lifecycleScope.launch {
-            val delayMillis = 500L // 0.3초마다 업데이트
+            val delayMillis = 500L // 0.5초마다 업데이트
+
+
 
             while (true) {
                 // 새 데이터 포인트 추가
                 addRandomDataPoint()
+                updateBarChartData()
 
                 // UI 업데이트를 메인 스레드에서 수행
                 withContext(Dispatchers.Main) {
@@ -601,7 +661,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         mediaPlayer?.start() // 소리 재생
     }
 
-    private fun setupChart() {
+    private fun setupLineChart() {
         lineDataSet1 = LineDataSet(entry_chart1, "LineGraph1")
 
         // 선의 색상을 보라색으로 변경
@@ -612,7 +672,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         })
 
 
-        lineDataSet1.mode = LineDataSet.Mode.CUBIC_BEZIER
+        lineDataSet1.mode = LineDataSet.Mode.LINEAR
         lineDataSet1.cubicIntensity = 0.1f
         lineDataSet1.setDrawCircleHole(false)
         lineDataSet1.setDrawValues(false)
@@ -657,7 +717,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
                 setCenterAxisLabels(true)
             }
 
-            animateXY(300, 300)
+            animateXY(500, 500)
             data = chartData
             invalidate()
 //            setTouchEnabled(true)
@@ -665,6 +725,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             invalidate()
         }
     }
+
 
     private fun generateInitialData() {
         val random = java.util.Random()
@@ -693,11 +754,14 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
 //        currentIndex++
     }
-
     private fun updateChart() {
         chartData.notifyDataChanged()
         lineChart.notifyDataSetChanged()
         lineChart.invalidate()
+
+        barData.notifyDataChanged()
+        horizontalBarChart.notifyDataSetChanged()
+        horizontalBarChart.invalidate()
     }
 
     private fun updateRecyclerView() {
@@ -707,4 +771,119 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         // 스크롤을 마지막 항목으로 이동시킵니다 (선택 사항).
         recyclerView.scrollToPosition(chartDataList.size - 1)
     }
+
+    //horizontal chart
+
+//    private fun configureChartAppearance() {
+//        horizontalBarChart.description.isEnabled = false // chart 밑에 description 표시 유무
+//        horizontalBarChart.setTouchEnabled(false) // 터치 유무
+//        horizontalBarChart.legend.isEnabled = false // Legend는 차트의 범례
+//        horizontalBarChart.setExtraOffsets(10f, 0f, 40f, 0f)
+//
+//        // XAxis (수평 막대 기준 왼쪽) - 선 유무, 사이즈, 색상, 축 위치 설정
+//        val xAxis: XAxis = horizontalBarChart.xAxis
+//        xAxis.apply {
+//            setDrawAxisLine(false)
+//            granularity = 1f
+//            textSize = 15f
+//            gridLineWidth = 25f
+//            gridColor = Color.parseColor("#80E5E5E5")
+//            position = XAxis.XAxisPosition.BOTTOM // X 축 데이터 표시 위치
+//        }
+//        xAxis.setDrawAxisLine(false)
+//        xAxis.granularity = 1f
+//        xAxis.textSize = 15f
+//        xAxis.gridLineWidth = 25f
+//        xAxis.gridColor = Color.parseColor("#80E5E5E5")
+//        xAxis.position = XAxis.XAxisPosition.BOTTOM // X 축 데이터 표시 위치
+//
+//        // YAxis(Left) (수평 막대 기준 아래쪽) - 선 유무, 데이터 최솟값/최댓값, label 유무
+//        val axisLeft: YAxis = horizontalBarChart.axisLeft
+//        axisLeft.setDrawGridLines(false)
+//        axisLeft.setDrawAxisLine(false)
+//        axisLeft.axisMinimum = 0f // 최솟값
+//        axisLeft.axisMaximum = 50f // 최댓값
+//        axisLeft.granularity = 1f // 값만큼 라인선 설정
+//        axisLeft.setDrawLabels(false) // label 삭제
+//
+//        // YAxis(Right) (수평 막대 기준 위쪽) - 사이즈, 선 유무
+//        val axisRight: YAxis = horizontalBarChart.axisRight
+//        axisRight.textSize = 15f
+//        axisRight.setDrawLabels(false) // label 삭제
+//        axisRight.setDrawGridLines(false)
+//        axisRight.setDrawAxisLine(false)
+//
+//        // XAxis에 원하는 String 설정하기 (앱 이름)
+////        xAxis.valueFormatter = object : ValueFormatter() {
+////            override fun getFormattedValue(value: Float): String {
+////                return APPS.get(value.toInt())
+////            }
+////        }
+//    }
+
+    private fun setUpBarChartData () {
+        // 1. [BarEntry] BarChart에 표시될 데이터 값 생성
+        for (i in 0 until 4) {
+            val x = i.toFloat()
+            val y: Float = 0.0F
+            bar_entries.add(BarEntry(x, y))
+        }
+    }
+
+    private fun createChartData() {
+        val apps = arrayOf("김민정", "정상수", "카리나", "마틴루터")
+
+        // 2. [BarDataSet] 단순 데이터를 막대 모양으로 표시, BarChart의 막대 커스텀
+        barDataSet = BarDataSet(bar_entries, "압박 성공 횟수")
+        barDataSet.setDrawIcons(false)
+        barDataSet.setDrawValues(true)
+        barDataSet.color = Color.parseColor("#66767676") // 색상 설정
+        // 데이터 값 원하는 String 포맷으로 설정하기 (ex. ~회)
+        barDataSet.valueFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                return value.toInt().toString() + "회"
+            }
+        }
+        // 3. [BarData] 보여질 데이터 구성
+        barData = BarData(barDataSet)
+        barData.barWidth = 0.5f
+        barData.setValueTextSize(15f)
+
+        horizontalBarChart.axisLeft.apply {
+            axisMinimum = 0f     // 그래프의 시작점을 0으로 설정
+            axisMaximum = 120f   // 그래프의 최댓값을 120으로 설정
+        }
+        horizontalBarChart.xAxis.apply {
+            labelCount = apps.size // 라벨 개수 설정
+            setDrawGridLines(false) // X축 격자선 제거
+            setDrawAxisLine(true) // X축 라인 표시
+            position = XAxis.XAxisPosition.BOTTOM // X축 위치 설정
+//            labelRotationAngle = 30f // 라벨의 각도 설정
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float): String {
+                    val index = value.toInt()
+                    if (index >= 0 && index < apps.size) {
+                        return apps[index]
+                    }
+                    return ""
+                }
+            }
+        }
+        // 오른쪽 Y축 설정 숨기기
+        horizontalBarChart.axisRight.isEnabled = false
+        // Description 제거
+        horizontalBarChart.description.isEnabled = false
+
+        horizontalBarChart.data = barData
+        horizontalBarChart.invalidate()
+    }
+
+    private fun updateBarChartData() {
+        val random = Random()
+        for (entry in bar_entries) {
+            // 0 또는 1을 더한 값으로 업데이트
+            entry.y = entry.y + random.nextInt(2)
+        }
+    }
+
 }
