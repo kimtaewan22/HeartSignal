@@ -16,15 +16,19 @@
         tools:ignore="AllowBackup">
         <activity
             android:name="com.cbnu.project.cpr.heartsignal.auth.AuthLoginActivity"
-            android:exported="false" />
-        <activity
-            android:name="com.cbnu.project.cpr.heartsignal.MainActivity"
-            android:exported="true">
+            android:exported="true" >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.cbnu.project.cpr.heartsignal.MainActivity"
+            android:exported="true">
+
 
             <!-- Declare notch support -->
             <meta-data
