@@ -15,7 +15,9 @@
  */
 package com.cbnu.project.cpr.heartsignal.fragment
 
+import android.animation.Animator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -40,6 +42,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
+import com.cbnu.project.cpr.heartsignal.MainViewModel
+import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
+import com.cbnu.project.cpr.heartsignal.R
+import com.cbnu.project.cpr.heartsignal.adapter.ChartDataRecyclerViewAdapter
+import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
@@ -47,11 +55,6 @@ import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.formatter.IFillFormatter
-import com.cbnu.project.cpr.heartsignal.MainViewModel
-import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
-import com.cbnu.project.cpr.heartsignal.R
-import com.cbnu.project.cpr.heartsignal.adapter.ChartDataRecyclerViewAdapter
-import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -98,6 +101,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var chartDataList: ArrayList<Entry>
     private lateinit var recyclerViewAdapter: ChartDataRecyclerViewAdapter
+
+    //lottie
+    private lateinit var lottieAnimationView: LottieAnimationView
 
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
@@ -166,9 +172,31 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         recyclerView.adapter = recyclerViewAdapter
         // "삐" 소리 재생을 위한 MediaPlayer 초기화
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.mp_beep)
+        // lottie
+        lottieAnimationView = fragmentCameraBinding.lottie
 
+        showLottieAnimation()
         showLineChart()
         return fragmentCameraBinding.root
+    }
+
+    private fun showLottieAnimation() {
+        lottieAnimationView.repeatCount = 60
+        lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
+
+            }
+            override fun onAnimationEnd(animation: Animator) {
+
+            }
+
+            override fun onAnimationCancel(animation: Animator) {
+
+            }
+            override fun onAnimationRepeat(animation: Animator) {
+
+            }
+        })
     }
 
     @SuppressLint("MissingPermission")
@@ -561,6 +589,8 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
                 }
                 // 타이머 소리 재생
                 playTimerSound()
+                // lottie play
+                showLottieAnimation()
                 // 지정된 시간만큼 대기
                 delay(delayMillis)
             }

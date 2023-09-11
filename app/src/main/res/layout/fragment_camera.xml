@@ -81,11 +81,13 @@
                     android:layout_marginBottom="10dp"
                     android:background="@android:color/darker_gray" />
 
-                <com.github.mikephil.charting.charts.HorizontalBarChart
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_margin="3dp"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    app:lottie_autoPlay="true"
+                    app:lottie_rawRes="@raw/heart_good"/>
 
             </LinearLayout>
 
