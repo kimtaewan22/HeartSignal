@@ -23,7 +23,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,12 +57,14 @@ import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IFillFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -119,7 +120,10 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private lateinit var barDataSet: BarDataSet
     private lateinit var barData : BarData
 
-    //tickmeter
+    //tickView
+    private lateinit var countdownJob: Job
+    private lateinit var tickerView: TickerView
+
 
 
     /** Blocking ML operations are performed using this executor */
@@ -171,6 +175,8 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         //프래그먼트가 종료될 때 MediaPlayer와 타이머를 정리합니다.
         mediaPlayer?.release()
         timer?.cancel()
+        countdownJob.cancel()
+
     }
 
     override fun onCreateView(
@@ -198,12 +204,36 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         // lottie
         lottieAnimationView = fragmentCameraBinding.lottie
         //tickerView
-
+        tickerView = fragmentCameraBinding.tickerView
+        tickerView.setCharacterLists(TickerUtils.provideNumberList())
+        countdownJob = CoroutineScope(Dispatchers.Main).launch {
+            startCountdown()
+        }
 
 
 
         showChart()
         return fragmentCameraBinding.root
+    }
+
+    private suspend fun startCountdown() {
+        var remainingTimeInSeconds = 60 // 초기값을 60으로 설정하여 60부터 시작
+
+        while (isActive && remainingTimeInSeconds >= 0) {
+//            val hours = remainingTimeInSeconds / 3600
+            val minutes = (remainingTimeInSeconds % 3600) / 60
+            val secondsRemaining = remainingTimeInSeconds % 60
+
+            val timeString = String.format("%02d:%02d", minutes, secondsRemaining)
+
+            withContext(Dispatchers.Main) {
+                tickerView.text = timeString
+            }
+
+            delay(1000) // 1초 간격으로 업데이트
+
+            remainingTimeInSeconds-- // 1초씩 감소
+        }
     }
 
 
@@ -666,13 +696,14 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
         // 선의 색상을 보라색으로 변경
         lineDataSet1.color = R.drawable.fade
-        lineDataSet1.setFillFormatter(IFillFormatter { lineDataSet1, dataProvider -> // change the return value here to better understand the effect
-            // return 600;
-            lineChart.axisLeft.axisMinimum
-        })
+
+        // 그래프 내부를 색상으로 채우기
+        lineDataSet1.setDrawFilled(true)
+        lineDataSet1.fillColor = R.drawable.fade
+//        lineDataSet1.fillAlpha = 30 // 채우기 색상의 투명도 설정 (0-255 사이의 값)
 
 
-        lineDataSet1.mode = LineDataSet.Mode.LINEAR
+//        lineDataSet1.mode = LineDataSet.Mode.LINEAR
         lineDataSet1.cubicIntensity = 0.1f
         lineDataSet1.setDrawCircleHole(false)
         lineDataSet1.setDrawValues(false)
@@ -696,6 +727,12 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
                 // 수평선 추가
                 addLimitLine(LimitLine(3.5f).apply {
+                    lineWidth = 1f // 수평선 두께
+                    lineColor = Color.BLUE // 수평선 색상
+                    enableDashedLine(10f, 10f, 0f) // 점선 형태 설정
+                    textSize = 12f
+                })
+                addLimitLine(LimitLine(4.5f).apply {
                     lineWidth = 1f // 수평선 두께
                     lineColor = Color.BLUE // 수평선 색상
                     enableDashedLine(10f, 10f, 0f) // 점선 형태 설정
@@ -729,9 +766,12 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
     private fun generateInitialData() {
         val random = java.util.Random()
+        var previousValue = 1f // 초기값 설정
+
         for (i in 0 until maxDataPoints) {
-            val randomValue = (1 + random.nextInt(5)).toFloat()
+            val randomValue = previousValue + (1 + random.nextInt(5)).toFloat()
             entry_chart1.add(Entry(i.toFloat(), randomValue))
+            previousValue = randomValue // 현재 값을 이전 값으로 설정
         }
     }
 

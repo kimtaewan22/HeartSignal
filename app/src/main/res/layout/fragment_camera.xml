@@ -40,6 +40,30 @@
                 android:layout_height="match_parent"
               />
 
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|top"
+                app:cardCornerRadius="20dp"
+                android:layout_marginTop="20dp"
+                >
+
+                <com.robinhood.ticker.TickerView
+                    android:id="@+id/tickerView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="60:00"
+                    android:padding="10dp"
+                    android:textColor="@color/blue_grey_400"
+                    android:textSize="60sp"
+                    android:gravity="center"
+                    />
+
+
+            </androidx.cardview.widget.CardView>
+
+
+
 
 
         </FrameLayout>
