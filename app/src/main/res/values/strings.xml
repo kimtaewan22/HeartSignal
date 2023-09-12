@@ -14,7 +14,7 @@
     ~ limitations under the License.
 -->
 <resources>
-    <string name="app_name">Pose Landmarker</string>
+    <string name="app_name">HeartSignal</string>
 
     <string name="media_pipe">MediaPipe</string>
 
@@ -44,6 +44,11 @@
     <string name="label_num_poses">Number of Poses</string>
     <string name="label_delegate">Delegate</string>
     <string name="label_models">Model</string>
+
+    <!-- record bottom sheet dialog -->
+    <string name="bottom_sheet_dialog_app_name">하트시그널</string>
+    <string name="record_bottom_sheet_dialog_title">이렇게 말해보세요</string>
+    <string name="record_bottom_sheet_dialog_subtitle">\"환자분 괜찮으세요?\"</string>
 
     <string-array name="delegate_spinner_titles">
         <item>CPU</item>
