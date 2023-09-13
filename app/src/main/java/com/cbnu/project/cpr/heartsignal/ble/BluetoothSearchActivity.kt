@@ -27,6 +27,9 @@ import com.cbnu.project.cpr.heartsignal.adapter.BluetoothDeviceListAdapter
 import com.cbnu.project.cpr.heartsignal.ble.BluetoothUtils.Companion.findResponseCharacteristic
 import com.cbnu.project.cpr.heartsignal.data.BluetoothDeviceInfo
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityBluetoothSearchBinding
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
+import java.nio.charset.Charset
 import java.util.UUID
 
 
@@ -44,6 +47,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
     private lateinit var mGatt: BluetoothGatt
     private var readMsg = ""
+    private var startTime: Long = 0
+
 
     var bluetoothGatt:BluetoothGatt? = null
 
@@ -278,6 +283,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
                         binding.connectedDeviceName.text = gatt?.device?.name
                         binding.connectedDeviceAddr.text = gatt?.device?.address
 
+
+
                         val services = gatt?.services
                         if (services != null) {
                             for (service in services) {
@@ -317,10 +324,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
 
             }
-
             override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-                Log.d(TAG, "Service status: ${status}")
-
+                Log.d(TAG, "Service status: $status")
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     val services = gatt?.services
@@ -333,8 +338,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
                                     // 특성(UUID) 확인
                                     Log.d(TAG, "Characteristic UUID: ${characteristic.uuid}")
 
-                                    // 원하는 특성(UUID)와 일치하는 경우에만 읽기 작업을 수행
-                                    if (characteristic.uuid == UUID.fromString(BluetoothUtils.WRITE_UUID)) {
+                                    // 원하는 특성(UUID)와 일치하는 경우에만 Notify 활성화
+                                    if (characteristic.uuid == UUID.fromString(BluetoothUtils.NOTIFY_UUID)) {
                                         if (ActivityCompat.checkSelfPermission(
                                                 this@BluetoothSearchActivity,
                                                 Manifest.permission.BLUETOOTH_CONNECT
@@ -344,20 +349,17 @@ class BluetoothSearchActivity : AppCompatActivity() {
                                             return
                                         }
 
-                                        // 데이터를 특성에 쓰기
-                                        val writeCharacteristic = gatt?.getService(serviceUUID)?.getCharacteristic(characteristic.uuid)
-                                        val dataToWrite = "Your Data to Write".toByteArray() // 쓸 데이터를 바이트 배열로 변환
+                                        // Notify 활성화
+                                        gatt?.setCharacteristicNotification(characteristic, true)
 
-                                        writeCharacteristic?.value = dataToWrite // 데이터 설정
+                                        // 해당 특성에 대한 디스크립터 설정
+                                        val descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
+                                        descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
 
-                                        val success = gatt?.writeCharacteristic(writeCharacteristic)
-                                        if (success == true) {
-                                            // 쓰기 작업이 성공한 경우
-                                            Log.d(TAG, "Write successful. Data written: ${String(dataToWrite)}")
-                                        } else {
-                                            // 쓰기 작업이 실패한 경우
-                                            Log.e(TAG, "Failed to write characteristic: ${characteristic.uuid}")
-                                        }
+                                        // 디스크립터 설정 적용
+                                        gatt?.writeDescriptor(descriptor)
+
+                                        Log.d(TAG, "Notify enabled for characteristic: ${characteristic.uuid}")
                                     }
                                 }
                             }
@@ -365,6 +367,155 @@ class BluetoothSearchActivity : AppCompatActivity() {
                     }
                 }
             }
+
+//            override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+//                // 데이터가 변경되었을 때 호출됩니다.
+//                if (characteristic == null) {
+//                    return
+//                }
+//
+//                val data = characteristic.value // 데이터를 바이트 배열로 가져옵니다.
+//
+//                // 데이터를 원하는 인코딩 방식으로 디코딩
+//                val decodedData = String(data, Charset.forName("UTF-8"))
+//
+//                // 디코딩된 데이터를 로그에 출력
+//                Log.d(TAG, "Received data: $decodedData")
+//            }
+
+            override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
+                // 데이터가 변경되었을 때 호출됩니다.
+                if (characteristic == null) {
+                    return
+                }
+
+                val data = characteristic.value // 데이터를 바이트 배열로 가져옵니다.
+
+                // 현재 시간 기록
+                val currentTime = System.currentTimeMillis()
+
+                // 데이터를 원하는 인코딩 방식으로 디코딩
+                val decodedData = String(data, Charset.forName("UTF-8"))
+                // 송신측에서 보내는 데이터 형식을 맞춰서 디코딩 해야함
+//                val decodedData = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).float
+
+                // 데이터를 받는 데 걸린 시간 계산
+                val elapsedTime = currentTime - startTime
+
+                // 디코딩된 데이터와 수신 시간을 로그에 출력
+                Log.d(TAG, "Received data: $decodedData")
+
+                // 현재 시간을 시작 시간으로 설정하여 다음 데이터 수신 시간 측정
+                startTime = currentTime
+            }
+
+
+
+//            override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+//                Log.d(TAG, "Service status: ${status}")
+//                if (status == BluetoothGatt.GATT_SUCCESS) {
+//                    val services = gatt?.services
+//                    if (services != null) {
+//                        for (service in services) {
+//                            // 원하는 서비스를 찾으면 해당 서비스 내부의 특성을 확인
+//                            if (service.uuid == serviceUUID) {
+//                                val characteristics = service.characteristics
+//                                for (characteristic in characteristics) {
+//                                    // 특성(UUID) 확인
+//                                    Log.d(TAG, "Characteristic UUID: ${characteristic.uuid}")
+//
+//                                    // 원하는 특성(UUID)와 일치하는 경우에만 읽기 작업을 수행
+////                                    if (characteristic.uuid == UUID.fromString(BluetoothUtils.NOTIFY_UUID)) {
+////                                        if (ActivityCompat.checkSelfPermission(
+////                                                this@BluetoothSearchActivity,
+////                                                Manifest.permission.BLUETOOTH_CONNECT
+////                                            ) != PackageManager.PERMISSION_GRANTED
+////                                        ) {
+////                                            // TODO: 권한 요청 처리
+////                                            return
+////                                        }
+////
+////                                        // 데이터를 특성에 쓰기
+////                                        val writeCharacteristic = gatt?.getService(serviceUUID)?.getCharacteristic(characteristic.uuid)
+////                                        val dataToWrite = "Your Data to Write".toByteArray() // 쓸 데이터를 바이트 배열로 변환
+////
+////                                        writeCharacteristic?.value = dataToWrite // 데이터 설정
+////
+////                                        val success = gatt?.writeCharacteristic(writeCharacteristic)
+////                                        if (success == true) {
+////                                            // 쓰기 작업이 성공한 경우
+////                                            Log.d(TAG, "Write successful. Data written: ${String(dataToWrite)}")
+////                                        } else {
+////                                            // 쓰기 작업이 실패한 경우
+////                                            Log.e(TAG, "Failed to write characteristic: ${characteristic.uuid}")
+////                                        }
+////                                    }
+//                                    for (characteristic in characteristics) {
+//                                        // 특성(UUID) 확인
+//                                        Log.d(TAG, "Characteristic UUID: ${characteristic.uuid}")
+//
+////                                        // 원하는 특성(UUID)와 일치하는 경우에만 읽기 작업을 수행
+////                                        if (characteristic.uuid == UUID.fromString(BluetoothUtils.NOTIFY_UUID)) {
+////                                            if (ActivityCompat.checkSelfPermission(
+////                                                    this@BluetoothSearchActivity,
+////                                                    Manifest.permission.BLUETOOTH_CONNECT
+////                                                ) != PackageManager.PERMISSION_GRANTED
+////                                            ) {
+////                                                // TODO: 권한 요청 처리
+////                                                return
+////                                            }
+////
+////                                            // 데이터를 특성에서 읽기
+////                                            val success = gatt?.readCharacteristic(characteristic)
+////                                            Log.d(TAG, "Success to read characteristic: ${success}")
+////
+////                                            if (success != true) {
+////                                                // 읽기 작업이 실패한 경우 처리
+////                                                Log.e(TAG, "Failed to read characteristic: ${characteristic.uuid}")
+////                                            }
+////                                        }
+//
+//                                        // 원하는 특성(UUID)와 일치하는 경우에만 Notify 활성화
+//                                        if (characteristic.uuid == UUID.fromString(BluetoothUtils.NOTIFY_UUID)) {
+//                                            if (ActivityCompat.checkSelfPermission(
+//                                                    this@BluetoothSearchActivity,
+//                                                    Manifest.permission.BLUETOOTH_CONNECT
+//                                                ) != PackageManager.PERMISSION_GRANTED
+//                                            ) {
+//                                                // TODO: 권한 요청 처리
+//                                                return
+//                                            }
+//
+//                                            // Notify 활성화
+//                                            gatt?.setCharacteristicNotification(characteristic, true)
+//
+//                                            // 해당 특성에 대한 디스크립터 설정
+//                                            val descriptor = characteristic.getDescriptor(UUID.fromString(("00002902-0000-1000-8000-00805f9b34fb")
+//                                            ))
+//                                            descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+//
+////                                            val dataAsString =
+////                                                descriptor?.value?.let { String(it, Charset.forName("UTF-8")) }
+////
+////                                            gatt?.writeDescriptor(descriptor)
+//
+//                                            // 디스크립터 값을 문자열로 변환하여 dataAsString 변수에 저장
+//                                            val dataAsString = descriptor?.value?.let { String(it, Charset.forName("UTF-16")) }
+//
+//                                            // 디스크립터 설정 적용
+//                                            gatt?.writeDescriptor(descriptor)
+//
+//                                            // dataAsString 변수를 사용하여 로그에 출력
+//                                            Log.d(TAG, "Notify enabled for characteristic: $dataAsString")
+//                                            Log.d(TAG, "Notify enabled for characteristic: ${descriptor?.value}")
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
 
             // 다른 BluetoothGattCallback 메서드들도 필요에 따라 추가합니다.
