@@ -1,3 +1,5 @@
 package com.cbnu.project.cpr.heartsignal.data
 
-data class BluetoothDeviceInfo(val name: String?, val address: String, val uuids: String?)
+import android.bluetooth.BluetoothDevice
+
+data class BluetoothDeviceInfo(val name: String?, val address: String, val uuids: String?, val device: BluetoothDevice)
