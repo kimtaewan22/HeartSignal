@@ -32,4 +32,10 @@
     <!-- Voice dialog -->
     <color name="subtitleBackground">#EEEEEE</color>
     <color name="subtitleTextColor">#7A7A7A</color>
+    <!-- Step Color -->
+    <color name="colorStateOne">#C6B732</color>
+    <color name="colorStateTwo">#CF9A4B</color>
+    <color name="colorStateThree">#FF5733</color>
+    <color name="colorStateFour">#FF2D00</color>
+
 </resources>

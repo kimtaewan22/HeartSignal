@@ -771,7 +771,6 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         for (i in 0 until maxDataPoints) {
             val randomValue = previousValue + (1 + random.nextInt(5)).toFloat()
             entry_chart1.add(Entry(i.toFloat(), randomValue))
-            previousValue = randomValue // 현재 값을 이전 값으로 설정
         }
     }
 

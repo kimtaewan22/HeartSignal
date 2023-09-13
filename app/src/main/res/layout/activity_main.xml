@@ -7,6 +7,13 @@
     tools:context=".MainActivity"
     tools:ignore="HardcodedText">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/mainlogo"/>
+
+
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_menu_actions"
         android:layout_width="wrap_content"

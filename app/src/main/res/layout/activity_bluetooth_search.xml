@@ -17,11 +17,85 @@
         android:padding="16dp"
         tools:context=".BluetoothActivity">
 
-        <Button
-            android:id="@+id/scan"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <Button
+                android:id="@+id/scan"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="10dp"
+                android:text="SCAN"/>
+
+        </LinearLayout>
+
+
+        <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SCAN"/>
+            android:backgroundTint="@color/blue_grey_400"
+            app:cardCornerRadius="10dp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center">
+
+                <LinearLayout
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Connected Device: "
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/connectedDeviceName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="연결된 장치 이름"
+                        android:textSize="16sp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Device Address: "
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/connectedDeviceAddr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="연결된 장치 주소"
+                        android:textSize="16sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+
+
+        </androidx.cardview.widget.CardView>
+
+
+
 
 
         <androidx.recyclerview.widget.RecyclerView

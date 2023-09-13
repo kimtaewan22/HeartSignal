@@ -124,4 +124,8 @@ dependencies {
     // StateProgressBar
     implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
 
+    //sidemenu
+    implementation 'com.github.yalantis:Side-Menu.Android:1.0.2'
+
+
 }

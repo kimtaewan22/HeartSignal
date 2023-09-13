@@ -1,4 +1,4 @@
-package com.cbnu.project.cpr.heartsignal
+package com.cbnu.project.cpr.heartsignal.step
 
 import android.animation.Animator
 import android.app.Activity
@@ -16,6 +16,7 @@ import android.util.Log
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
+import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.custom.CustomProgressDialog
 import com.cbnu.project.cpr.heartsignal.custom.RecordBottomSheetDialog
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityStep1Binding
@@ -24,9 +25,12 @@ class Step1Activity : AppCompatActivity() {
     private lateinit var binding: ActivityStep1Binding
     private val REQUEST_SPEECH_RECOGNITION = 1001
     private lateinit var speechRecognizer: SpeechRecognizer
-    private var customProgressDialog: CustomProgressDialog? = null
-    private var countdownTimer: CountDownTimer? = null
-    private var mediaPlayer: MediaPlayer? = null
+//    private var customProgressDialog: CustomProgressDialog? = null
+//    private var countdownTimer: CountDownTimer? = null
+    private var mediaPlayerEx: MediaPlayer? = null
+    private var mediaPlayerSuc: MediaPlayer? = null
+    private var mediaPlayerEnd: MediaPlayer? = null
+
     private lateinit var lottieAnimationViewExplain: LottieAnimationView
     private lateinit var bottomSheetDialog: RecordBottomSheetDialog
     private lateinit var bottomSheetTitle: TextView
@@ -41,7 +45,7 @@ class Step1Activity : AppCompatActivity() {
         binding = ActivityStep1Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.step1)
+        mediaPlayerEx = MediaPlayer.create(this, R.raw.step1)
         lottieAnimationViewExplain = binding.lottieExplain
         // RecognizerIntent 생성
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
@@ -75,9 +79,9 @@ class Step1Activity : AppCompatActivity() {
 
     private fun playTimerSound() {
         showLottieAnimation()
-        mediaPlayer?.seekTo(0) // 소리를 처음부터 재생
-        mediaPlayer?.start() // 소리 재생
-        mediaPlayer?.setOnCompletionListener { mp ->
+        mediaPlayerEx?.seekTo(0) // 소리를 처음부터 재생
+        mediaPlayerEx?.start() // 소리 재생
+        mediaPlayerEx?.setOnCompletionListener { mp ->
             // 미디어 재생이 완료될 때 실행할 동작을 여기에 추가합니다.
             // 예를 들어, 종료 메시지를 표시하거나 다른 작업을 수행할 수 있습니다.
 
@@ -166,7 +170,7 @@ class Step1Activity : AppCompatActivity() {
                     currentStep++
                     bottomSheetTitle.text = "이렇게 말해보세요"
                     bottomSheetSubTitle.text = "몸 상태는 어떠세요?"
-                    startNextSpeechRecognition()
+                    playMp3FileSuc()
                 }
                 else{
                     bottomSheetTitle.text = "다시 말해보세요"
@@ -179,7 +183,7 @@ class Step1Activity : AppCompatActivity() {
                     currentStep++
                     bottomSheetTitle.text = "이렇게 말해보세요"
                     bottomSheetSubTitle.text = "조금만 참으세요"
-                    startNextSpeechRecognition()
+                    playMp3FileSuc()
                 }
                 else{
                     bottomSheetTitle.text = "다시 말해보세요"
@@ -199,8 +203,8 @@ class Step1Activity : AppCompatActivity() {
                     bottomSheetTitle.text = "곧 다음 단계로 이동합니다!"
                     // 2초 후에 함수 호출
                     Handler(Looper.getMainLooper()).postDelayed({
-                        performFinalActionOrFinish()
-                    }, 2500)
+                        playMp3FileEnd()
+                    }, 500)
                 }
                 else{
                     bottomSheetTitle.text = "다시 말해보세요"
@@ -228,34 +232,71 @@ class Step1Activity : AppCompatActivity() {
 //                bottomSheetDialog.dismiss()
 //            }
 //        }
-        startActivity(Intent(this@Step1Activity, MainActivity::class.java))
+        val intent = Intent(this@Step1Activity, StepProgressActivity::class.java)
+        intent.putExtra("stepFlag", "심폐소생술")
+        startActivity(intent)
         finish()
     }
-
-
-
-    private fun showResultInDialog() {
-        if(customProgressDialog == null) {
-            customProgressDialog = CustomProgressDialog()
+    private fun playMp3FileSuc(){
+        mediaPlayerSuc = MediaPlayer.create(this, R.raw.success)
+        mediaPlayerSuc?.setOnCompletionListener {
+            // 음악 재생이 완료된 후 호출할 동작을 여기에 추가
+            startNextSpeechRecognition()
         }
+        mediaPlayerSuc?.seekTo(0) // 소리를 처음부터 재생
+        mediaPlayerSuc?.start()
 
-        countdownTimer = object : CountDownTimer(10000, 100) {
-            override fun onTick(millisUntilFinished: Long) {
-                val progress = ((10000 - millisUntilFinished) / 100).toInt()
-                customProgressDialog?.updateProgress(progress)
-                customProgressDialog?.setUpTextView("잠시후 STEP2가 시작됩니다")
-            }
-
-            override fun onFinish() {
-                // Set the value to false after 10 seconds
-                customProgressDialog?.dismiss()
-            }
+        mediaPlayerSuc?.setOnCompletionListener { mp ->
+            // 미디어 재생이 완료될 때 실행할 동작을 여기에 추가합니다.
+            // 예를 들어, 종료 메시지를 표시하거나 다른 작업을 수행할 수 있습니다.
+            // 미디어 플레이어 해제
+            mp.release()
+            startNextSpeechRecognition()
         }
-        countdownTimer?.start()
-
-        val fragmentManager = supportFragmentManager
-        customProgressDialog?.show(fragmentManager, "CustomProgressDialog")
     }
+
+    private fun playMp3FileEnd(){
+        mediaPlayerEnd = MediaPlayer.create(this, R.raw.step1end)
+        mediaPlayerEnd?.setOnCompletionListener {
+            // 음악 재생이 완료된 후 호출할 동작을 여기에 추가
+            startNextSpeechRecognition()
+        }
+        mediaPlayerEnd?.seekTo(0) // 소리를 처음부터 재생
+        mediaPlayerEnd?.start()
+
+        mediaPlayerEnd?.setOnCompletionListener { mp ->
+            // 미디어 재생이 완료될 때 실행할 동작을 여기에 추가합니다.
+            // 예를 들어, 종료 메시지를 표시하거나 다른 작업을 수행할 수 있습니다.
+            // 미디어 플레이어 해제
+            mp.release()
+            performFinalActionOrFinish()
+
+        }
+    }
+
+
+//    private fun showResultInDialog() {
+//        if(customProgressDialog == null) {
+//            customProgressDialog = CustomProgressDialog()
+//        }
+//
+//        countdownTimer = object : CountDownTimer(10000, 100) {
+//            override fun onTick(millisUntilFinished: Long) {
+//                val progress = ((10000 - millisUntilFinished) / 100).toInt()
+//                customProgressDialog?.updateProgress(progress)
+//                customProgressDialog?.setUpTextView("잠시후 STEP2가 시작됩니다")
+//            }
+//
+//            override fun onFinish() {
+//                // Set the value to false after 10 seconds
+//                customProgressDialog?.dismiss()
+//            }
+//        }
+//        countdownTimer?.start()
+//
+//        val fragmentManager = supportFragmentManager
+//        customProgressDialog?.show(fragmentManager, "CustomProgressDialog")
+//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
