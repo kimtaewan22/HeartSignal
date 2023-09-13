@@ -252,12 +252,28 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
         // BluetoothGattCallback을 사용하여 BluetoothGatt 객체를 초기화하고 연결을 시도합니다.
         val gattCallback = object : BluetoothGattCallback() {
+            // 원하는 서비스 UUID
+            val serviceUUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
             override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     // 연결이 성공적으로 완료된 경우
                     runOnUiThread {
                         // UI 스레드에서 Toast 띄우기
-                        Toast.makeText(this@BluetoothSearchActivity, "연결 성공! : ${gatt?.device?.name} , ${gatt?.device?.address} , ${gatt?.device?.type} ", Toast.LENGTH_SHORT).show()
+                        if (ActivityCompat.checkSelfPermission(
+                                this@BluetoothSearchActivity,
+                                Manifest.permission.BLUETOOTH_CONNECT
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return@runOnUiThread
+                        }
+                        Toast.makeText(this@BluetoothSearchActivity, "연결 성공! : ${gatt?.device?.name} , ${gatt?.device?.address}  ", Toast.LENGTH_SHORT).show()
                         // BluetoothGatt 객체로부터 서비스 목록을 가져옵니다.
                         binding.connectedDeviceName.text = gatt?.device?.name
                         binding.connectedDeviceAddr.text = gatt?.device?.address
@@ -286,9 +302,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
                         // for ActivityCompat#requestPermissions for more details.
                         return
                     }
-
-
                     // 연결 성공 후 추가 작업 수행
+                    gatt?.discoverServices()
                     // 예: 서비스 발견을 시작하거나 특성에 대한 구성을 수행합니다.
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     // 연결이 해제된 경우
@@ -303,6 +318,54 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
             }
 
+            override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
+                Log.d(TAG, "Service status: ${status}")
+
+
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    val services = gatt?.services
+                    if (services != null) {
+                        for (service in services) {
+                            // 원하는 서비스를 찾으면 해당 서비스 내부의 특성을 확인
+                            if (service.uuid == serviceUUID) {
+                                val characteristics = service.characteristics
+                                for (characteristic in characteristics) {
+                                    // 특성(UUID) 확인
+                                    Log.d(TAG, "Characteristic UUID: ${characteristic.uuid}")
+
+                                    // 원하는 특성(UUID)와 일치하는 경우에만 읽기 작업을 수행
+                                    if (characteristic.uuid == UUID.fromString(BluetoothUtils.WRITE_UUID)) {
+                                        if (ActivityCompat.checkSelfPermission(
+                                                this@BluetoothSearchActivity,
+                                                Manifest.permission.BLUETOOTH_CONNECT
+                                            ) != PackageManager.PERMISSION_GRANTED
+                                        ) {
+                                            // TODO: 권한 요청 처리
+                                            return
+                                        }
+
+                                        // 데이터를 특성에 쓰기
+                                        val writeCharacteristic = gatt?.getService(serviceUUID)?.getCharacteristic(characteristic.uuid)
+                                        val dataToWrite = "Your Data to Write".toByteArray() // 쓸 데이터를 바이트 배열로 변환
+
+                                        writeCharacteristic?.value = dataToWrite // 데이터 설정
+
+                                        val success = gatt?.writeCharacteristic(writeCharacteristic)
+                                        if (success == true) {
+                                            // 쓰기 작업이 성공한 경우
+                                            Log.d(TAG, "Write successful. Data written: ${String(dataToWrite)}")
+                                        } else {
+                                            // 쓰기 작업이 실패한 경우
+                                            Log.e(TAG, "Failed to write characteristic: ${characteristic.uuid}")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
 
             // 다른 BluetoothGattCallback 메서드들도 필요에 따라 추가합니다.
         }
@@ -310,6 +373,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
         // BluetoothGatt 객체 초기화 및 연결 시도
         bluetoothGatt = device.connectGatt(this@BluetoothSearchActivity, false, gattCallback)
+
     }
 
 
