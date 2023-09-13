@@ -1,40 +1,65 @@
-/*
- * Copyright 2023 The TensorFlow Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.cbnu.project.cpr.heartsignal
 
-import android.content.pm.ActivityInfo
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
+import com.cbnu.project.cpr.heartsignal.ble.BluetoothSearchActivity
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityMainBinding
+import com.cbnu.project.cpr.heartsignal.step.Step0Activity
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var activityMainBinding: ActivityMainBinding
-
+class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var binding:ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setContentView(activityMainBinding.root)
-
-
+        setupFabButtons()
+    }
+    private fun setupFabButtons() {
+        binding.fabMenuActions.shrink()
+        binding.fabMenuActions.setOnClickListener(this)
+        binding.fabMenuBluetooth.setOnClickListener(this)
+        binding.fabMenuCpr.setOnClickListener(this)
+    }
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.fab_menu_actions -> {
+                expandOrCollapseFAB()
+            }
+            R.id.fab_menu_bluetooth -> {
+                showToast("블루투스 연결")
+                startActivity(Intent(this@MainActivity, BluetoothSearchActivity::class.java))
+            }
+            R.id.fab_menu_cpr -> {
+                showToast("cpr훈련")
+                startActivity(Intent(this@MainActivity, Step0Activity::class.java))
+            }
+        }
     }
 
-    override fun onBackPressed() {
-        finish()
+
+    private fun showToast(message: String) {
+        Toast.makeText(baseContext, message, Toast.LENGTH_SHORT).show()
     }
+
+    private fun expandOrCollapseFAB() {
+        if (binding.fabMenuActions.isExtended) {
+            binding.fabMenuActions.shrink()
+            binding.fabMenuBluetooth.hide()
+            binding.fabMenuAddAlarmText.visibility = View.GONE
+            binding.fabMenuCpr.hide()
+            binding.fabMenuAddPersonText.visibility = View.GONE
+        } else {
+            binding.fabMenuActions.extend()
+            binding.fabMenuBluetooth.show()
+            binding.fabMenuAddAlarmText.visibility = View.VISIBLE
+            binding.fabMenuCpr.show()
+            binding.fabMenuAddPersonText.visibility = View.VISIBLE
+        }
+    }
+
+
 }

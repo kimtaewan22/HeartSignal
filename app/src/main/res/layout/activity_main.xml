@@ -1,44 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    ~ Copyright 2023 The TensorFlow Authors. All Rights Reserved.
-    ~
-    ~ Licensed under the Apache License, Version 2.0 (the "License");
-    ~ you may not use this file except in compliance with the License.
-    ~ You may obtain a copy of the License at
-    ~
-    ~       http://www.apache.org/licenses/LICENSE-2.0
-    ~
-    ~ Unless required by applicable law or agreed to in writing, software
-    ~ distributed under the License is distributed on an "AS IS" BASIS,
-    ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    ~ See the License for the specific language governing permissions and
-    ~ limitations under the License.
--->
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    tools:context=".MainActivity"
+    tools:ignore="HardcodedText">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_menu_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/blue_grey_400"
+        android:text="메뉴"
+        app:icon="@drawable/ic_baseline_add_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fragment_container"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:keepScreenOn="true"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph"
-            tools:context="com.cbnu.project.cpr.heartsignal.MainActivity" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_menu_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/blue_grey_400"
+        android:contentDescription="Menu Alarm"
+        android:visibility="gone"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/fab_menu_actions"
+        app:layout_constraintEnd_toEndOf="@+id/fab_menu_actions"
+        app:srcCompat="@drawable/ic_bluetooth" />
 
+    <TextView
+        android:id="@+id/fab_menu_add_alarm_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="블루투스 연결"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_menu_bluetooth"
+        app:layout_constraintEnd_toStartOf="@+id/fab_menu_bluetooth"
+        app:layout_constraintTop_toTopOf="@+id/fab_menu_bluetooth" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_menu_cpr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/blue_grey_400"
+        android:contentDescription="Menu Person"
+        android:visibility="gone"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/fab_menu_bluetooth"
+        app:layout_constraintEnd_toEndOf="@+id/fab_menu_bluetooth"
+        app:layout_constraintStart_toStartOf="@+id/fab_menu_bluetooth"
+        app:srcCompat="@drawable/ic_cpr" />
 
+    <TextView
+        android:id="@+id/fab_menu_add_person_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="CPR 훈련"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/fab_menu_cpr"
+        app:layout_constraintEnd_toStartOf="@+id/fab_menu_cpr"
+        app:layout_constraintTop_toTopOf="@+id/fab_menu_cpr" />
 
-    </RelativeLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
