@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import com.cbnu.project.cpr.heartsignal.MainActivity
 import com.cbnu.project.cpr.heartsignal.step.Step1Activity
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityAuthLoginBinding
+import com.cbnu.project.cpr.heartsignal.step.Step2Activity
 import com.cbnu.project.cpr.heartsignal.step.StepProgressActivity
 
 class AuthLoginActivity : AppCompatActivity() {
@@ -28,6 +29,10 @@ class AuthLoginActivity : AppCompatActivity() {
                 this,
                 REQUIRED_PERMISSIONS,
                 REQUEST_CODE_PERMISSIONS)
+        }
+
+        binding.testBtn.setOnClickListener {
+            startActivity(Intent(this@AuthLoginActivity, Step2Activity::class.java))
         }
 
         binding.authLogin.setOnClickListener {
