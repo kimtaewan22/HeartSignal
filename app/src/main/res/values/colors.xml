@@ -38,4 +38,8 @@
     <color name="colorStateThree">#FF5733</color>
     <color name="colorStateFour">#FF2D00</color>
 
+    <color name="correct_pose">#88FF00</color>
+    <color name="incorrect_pose">#FF0000</color>
+
+
 </resources>
