@@ -127,5 +127,8 @@ dependencies {
     //sidemenu
     implementation 'com.github.yalantis:Side-Menu.Android:1.0.2'
 
+    //toggle
+    implementation 'com.github.angads25:toggle:1.1.0'
+
 
 }
