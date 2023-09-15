@@ -12,6 +12,7 @@ import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -21,10 +22,12 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.core.os.HandlerCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper.Companion.TAG
 import com.cbnu.project.cpr.heartsignal.adapter.BluetoothDeviceListAdapter
 import com.cbnu.project.cpr.heartsignal.ble.BluetoothUtils.Companion.findResponseCharacteristic
 import com.cbnu.project.cpr.heartsignal.data.BluetoothDeviceInfo
@@ -33,6 +36,7 @@ import com.github.angads25.toggle.interfaces.OnToggledListener
 import com.github.angads25.toggle.model.ToggleableView
 import com.github.angads25.toggle.widget.LabeledSwitch
 import java.nio.charset.Charset
+import java.util.Random
 import java.util.UUID
 
 
@@ -53,43 +57,24 @@ class BluetoothSearchActivity : AppCompatActivity() {
     private var startTime: Long = 0
 
 
+    private var shouldReadData = false
+    var bluetoothGatt: BluetoothGatt? = null
 
-    var bluetoothGatt:BluetoothGatt? = null
+    private val bluetoothPrefs by lazy {
+        getSharedPreferences("BluetoothPrefs", Context.MODE_PRIVATE)
+    }
+    private val bluetoothDeviceAddressKey = "DeviceAddress"
 
 
 
-//    private val scanCallback = object : ScanCallback() {
-//        override fun onScanResult(callbackType: Int, result: ScanResult) {
-//            val device = result.device
-//            val address = device.address
-//            if (address == "aa" && !scanResults.contains(device)) {
-//                // "aa" 주소를 가진 기기만 추가 -> 오렌지보드 address값으로 변경
-//                scanResults.add(device)
-//                deviceList.add(BluetoothDeviceInfo(device?.name ?: "NULL", address,
-//                    device.uuids?.toString() ?: "NULL", device
-//                ))
-//                bluetoothDeviceListAdapter.notifyDataSetChanged()
-//                if (ActivityCompat.checkSelfPermission(
-//                        this@BluetoothSearchActivity,
-//                        Manifest.permission.BLUETOOTH_CONNECT
-//                    ) != PackageManager.PERMISSION_GRANTED
-//                ) {
-//                    return
-//                }
-//            }
-//            Log.d(TAG, "Scanned Device: ${device?.name} - $address - ${device.uuids}")
-//        }
-//
-//        override fun onScanFailed(errorCode: Int) {
-//            Log.e(TAG, "Scan failed with error code: $errorCode")
-//        }
-//    }
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val device = result.device
-            if (!scanResults.contains(device)) {
+            val address = device.address
+            if (address == "D4:9D:65:20:C1:4D" && !scanResults.contains(device)) {
+                // "aa" 주소를 가진 기기만 추가 -> 오렌지보드 address값으로 변경
                 scanResults.add(device)
-                deviceList.add(BluetoothDeviceInfo(device?.name ?: "NULL", device.address,
+                deviceList.add(BluetoothDeviceInfo(device?.name ?: "NULL", address,
                     device.uuids?.toString() ?: "NULL", device
                 ))
                 bluetoothDeviceListAdapter.notifyDataSetChanged()
@@ -98,16 +83,9 @@ class BluetoothSearchActivity : AppCompatActivity() {
                         Manifest.permission.BLUETOOTH_CONNECT
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
                     return
                 }
-                Log.d(TAG, "Scanned Device: ${device?.name} - ${device.address} - ${device.uuids}")
+//                Log.d(TAG, "Scanned Device: ${device?.name} - $address - ${device.uuids}")
 
             }
         }
@@ -116,6 +94,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
             Log.e(TAG, "Scan failed with error code: $errorCode")
         }
     }
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -136,6 +116,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
         } else {
 //            startScan()
         }
+        // 초기에는 WRITE 작업을 수행하기 위해 true로 설정
+        shouldReadData = false
 
         // 리사이클러뷰 초기화
         bleRecyclerView = binding.scannedBleRecyclerView // 리사이클러뷰 ID 변경 필요
@@ -178,6 +160,21 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
     }
 
+    // 다시 연결하여 READ 작업 수행하는 함수
+    private fun reconnectAndReadData(deviceAddress: String) {
+        val bluetoothDevice = adapter.getRemoteDevice(deviceAddress)
+        connectToDevice(bluetoothDevice)
+        shouldReadData = true
+    }
+
+    // 다시 연결하여 데이터를 읽어오도록 시도
+    private fun handleReconnectAndReadData() {
+        val deviceAddress = bluetoothPrefs.getString(bluetoothDeviceAddressKey, null)
+        if (deviceAddress != null) {
+            reconnectAndReadData(deviceAddress)
+        }
+    }
+
     private fun connectToDevice(device: BluetoothDevice) {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -200,6 +197,21 @@ class BluetoothSearchActivity : AppCompatActivity() {
             override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     // 연결이 성공적으로 완료된 경우
+                    if (ActivityCompat.checkSelfPermission(
+                            this@BluetoothSearchActivity,
+                            Manifest.permission.BLUETOOTH_CONNECT
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+
+                        return
+                    }
+                    gatt?.discoverServices()
+                    // 연결된 블루투스 장치의 주소를 SharedPreferences에 저장
+                    val deviceAddress = gatt?.device?.address
+                    if (deviceAddress != null) {
+                        bluetoothPrefs.edit().putString(bluetoothDeviceAddressKey, deviceAddress).apply()
+                    }
+
                     runOnUiThread {
                         // UI 스레드에서 Toast 띄우기
                         if (ActivityCompat.checkSelfPermission(
@@ -233,7 +245,6 @@ class BluetoothSearchActivity : AppCompatActivity() {
                         return
                     }
                     // 연결 성공 후 추가 작업 수행
-                    gatt?.discoverServices()
                     // 예: 서비스 발견을 시작하거나 특성에 대한 구성을 수행합니다.
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     // 연결이 해제된 경우
@@ -242,11 +253,82 @@ class BluetoothSearchActivity : AppCompatActivity() {
                         Toast.makeText(this@BluetoothSearchActivity, "연결 해제", Toast.LENGTH_SHORT).show()
                     }
 
+                    // 연결이 끊어졌으므로 BluetoothGatt를 닫아야 합니다.
+                    bluetoothGatt?.close()
+                    bluetoothGatt = null
+
+                    // 데이터를 한 번만 쓰고 연결을 끊은 후 다시 연결하여 데이터를 읽어오도록 시도
+                    if (shouldReadData) {
+                        handleReconnectAndReadData()
+                        shouldReadData = false // 다시 연결할 때 읽기 작업 허용 해제
+                    }
+
                     Log.d(TAG, "연결 해제")
                 }
 
 
             }
+
+            override fun onCharacteristicWrite(
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?,
+                status: Int
+            ) {
+                Log.d(TAG, "STATUSCODE: ${ BluetoothGatt.GATT_SUCCESS} , $status")
+
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+
+
+                    val services = gatt?.services
+                    if (services != null) {
+                        for (service in services) {
+                            // 원하는 서비스를 찾으면 해당 서비스 내부의 특성을 확인
+                            if (service.uuid == serviceUUID) {
+                                val characteristics = service.characteristics
+                                for (characteristic in characteristics) {
+                                    // 특성(UUID) 확인
+                                    Log.d(TAG, "Characteristic UUID: ${characteristic.uuid}")
+
+                                    // 원하는 특성(UUID)와 일치하는 경우에만 Notify 활성화
+                                    if (characteristic.uuid == UUID.fromString(BluetoothUtils.WRITE_UUID)) {
+                                        if (ActivityCompat.checkSelfPermission(
+                                                this@BluetoothSearchActivity,
+                                                Manifest.permission.BLUETOOTH_CONNECT
+                                            ) != PackageManager.PERMISSION_GRANTED
+                                        ) {
+                                            // TODO: 권한 요청 처리
+                                            return
+                                        }
+
+                                        // 데이터를 보낼 문자열 또는 바이트 배열 생성
+                                        val dataToSend = "Hello, BLE Device!".toByteArray()
+
+                                        // BluetoothGattCharacteristic 객체 생성 또는 가져오기 (여기서는 예시로 새로운 객체를 생성)
+                                        val characteristic = BluetoothGattCharacteristic(
+                                            UUID.fromString(BluetoothUtils.WRITE_UUID),
+                                            BluetoothGattCharacteristic.PROPERTY_WRITE, // 또는 다른 속성
+                                            BluetoothGattCharacteristic.PERMISSION_WRITE // 또는 다른 권한
+                                        )
+
+                                        // BluetoothGattCharacteristic에 데이터 설정
+                                        characteristic.value = dataToSend
+
+                                        // 데이터를 쓰기 위해 BluetoothGatt 객체를 사용
+                                        val success = gatt?.writeCharacteristic(characteristic)
+
+                                        if (success == true) {
+                                            Log.d(TAG, "Data write request sent successfully.")
+                                        } else {
+                                            Log.d(TAG, "Failed to send data write request.")
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
                 Log.d(TAG, "Service status: $status")
 
@@ -261,7 +343,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
                                     // 특성(UUID) 확인
                                     Log.d(TAG, "Characteristic UUID: ${characteristic.uuid}")
 
-                                    // 원하는 특성(UUID)와 일치하는 경우에만 Notify 활성화
+                                    // 원하는 특성(UUID)와 일치하는 경우에만 읽기 작업을 수행
                                     if (characteristic.uuid == UUID.fromString(BluetoothUtils.NOTIFY_UUID)) {
                                         if (ActivityCompat.checkSelfPermission(
                                                 this@BluetoothSearchActivity,
@@ -276,13 +358,18 @@ class BluetoothSearchActivity : AppCompatActivity() {
                                         gatt?.setCharacteristicNotification(characteristic, true)
 
                                         // 해당 특성에 대한 디스크립터 설정
-                                        val descriptor = characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
-                                        descriptor?.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                                        val descriptor =
+                                            characteristic.getDescriptor(UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"))
+                                        descriptor?.value =
+                                            BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
 
                                         // 디스크립터 설정 적용
                                         gatt?.writeDescriptor(descriptor)
 
-                                        Log.d(TAG, "Notify enabled for characteristic: ${characteristic.uuid}")
+                                        Log.d(
+                                            TAG,
+                                            "Notify enabled for characteristic: ${characteristic.uuid}"
+                                        )
                                     }
                                 }
                             }
@@ -291,14 +378,6 @@ class BluetoothSearchActivity : AppCompatActivity() {
                 }
             }
 
-            // 이 함수에서의 value값을 얻어야 할 수도 있음
-            override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic, value: ByteArray) {
-                super.onCharacteristicChanged(gatt, characteristic, value)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-                    readMsg = String(value)
-                    Log.d(TAG,"블루투스 수신성공 : $readMsg")
-                }
-            }
 
 
             override fun onCharacteristicChanged(gatt: BluetoothGatt?, characteristic: BluetoothGattCharacteristic?) {
@@ -337,7 +416,16 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
     }
 
+    // 랜덤 데이터 생성 함수 예제
+    private fun generateRandomData(): ByteArray {
+        val dataSize = 20 // 원하는 데이터 크기 (바이트)
+        val randomData = ByteArray(dataSize)
+        val random = Random()
 
+        random.nextBytes(randomData) // 랜덤 데이터 생성
+
+        return randomData
+    }
     private fun startScan() {
         if (!adapter.isEnabled) return
         if (scanning) return
@@ -386,7 +474,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
     private fun showLottieAnimation() {
         val scanAnim = binding.animScanning
-        scanAnim.repeatCount = 5
+        scanAnim.repeatCount = 20
         scanAnim.visibility = View.VISIBLE
         scanAnim.playAnimation()
         scanAnim.addAnimatorListener(object : Animator.AnimatorListener {
