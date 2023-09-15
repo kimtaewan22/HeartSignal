@@ -393,9 +393,9 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
         // 점선 스타일 설정
         val segmentLength = 20f // 일정한 간격을 20 픽셀로 설정
         val deviation = 5f // 간격을 랜덤하게 흔들어주는 정도를 5 픽셀로 설정
-//        linePaint.pathEffect = DiscretePathEffect(segmentLength, deviation)
+        linePaint.pathEffect = DiscretePathEffect(segmentLength, deviation)
 //        linePaint.pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f)
-        linePaint.pathEffect = CornerPathEffect(5f)
+//        linePaint.pathEffect = CornerPathEffect(5f)
 
 
 
