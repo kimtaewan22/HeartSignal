@@ -52,8 +52,6 @@ class BluetoothSearchActivity : AppCompatActivity() {
     private lateinit var bluetoothDeviceListAdapter: BluetoothDeviceListAdapter
     private val deviceList = mutableListOf<BluetoothDeviceInfo>()
 
-    private lateinit var mGatt: BluetoothGatt
-    private var readMsg = ""
     private var startTime: Long = 0
 
 
@@ -160,21 +158,6 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
     }
 
-    // 다시 연결하여 READ 작업 수행하는 함수
-    private fun reconnectAndReadData(deviceAddress: String) {
-        val bluetoothDevice = adapter.getRemoteDevice(deviceAddress)
-        connectToDevice(bluetoothDevice)
-        shouldReadData = true
-    }
-
-    // 다시 연결하여 데이터를 읽어오도록 시도
-    private fun handleReconnectAndReadData() {
-        val deviceAddress = bluetoothPrefs.getString(bluetoothDeviceAddressKey, null)
-        if (deviceAddress != null) {
-            reconnectAndReadData(deviceAddress)
-        }
-    }
-
     private fun connectToDevice(device: BluetoothDevice) {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -189,6 +172,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
             )
             return
         }
+
 
         // BluetoothGattCallback을 사용하여 BluetoothGatt 객체를 초기화하고 연결을 시도합니다.
         val gattCallback = object : BluetoothGattCallback() {
@@ -256,12 +240,6 @@ class BluetoothSearchActivity : AppCompatActivity() {
                     // 연결이 끊어졌으므로 BluetoothGatt를 닫아야 합니다.
                     bluetoothGatt?.close()
                     bluetoothGatt = null
-
-                    // 데이터를 한 번만 쓰고 연결을 끊은 후 다시 연결하여 데이터를 읽어오도록 시도
-                    if (shouldReadData) {
-                        handleReconnectAndReadData()
-                        shouldReadData = false // 다시 연결할 때 읽기 작업 허용 해제
-                    }
 
                     Log.d(TAG, "연결 해제")
                 }
