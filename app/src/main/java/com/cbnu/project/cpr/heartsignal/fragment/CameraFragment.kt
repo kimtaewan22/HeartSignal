@@ -17,6 +17,10 @@ package com.cbnu.project.cpr.heartsignal.fragment
 
 import android.animation.Animator
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Configuration
 import android.graphics.Color
 import android.media.MediaPlayer
@@ -38,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -74,7 +79,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
-class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
+class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
     companion object {
         private const val TAG = "Pose Landmarker"
@@ -95,7 +100,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     // Sound
     private var mediaPlayer: MediaPlayer? = null
     private val timer: CountDownTimer? = null
-
+    private var mediaCountDown: MediaPlayer? = null
     //그래프 설정
     private lateinit var lineChart: LineChart
     private val entry_chart1 = ArrayList<Entry>()
@@ -113,6 +118,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
 
     // lottie
     private lateinit var lottieAnimationView: LottieAnimationView
+    private lateinit var lottie_count: LottieAnimationView
 
     // horizontal bar
     private lateinit var horizontalBarChart: HorizontalBarChart
@@ -121,8 +127,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
     private lateinit var barData : BarData
 
     //tickView
-    private lateinit var countdownJob: Job
+    private var countdownJob: Job? = null
     private lateinit var tickerView: TickerView
+    private var processingData = false
 
 
 
@@ -175,7 +182,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         //프래그먼트가 종료될 때 MediaPlayer와 타이머를 정리합니다.
         mediaPlayer?.release()
         timer?.cancel()
-        countdownJob.cancel()
+        countdownJob?.cancel()
 
     }
 
@@ -201,19 +208,40 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         recyclerView.adapter = recyclerViewAdapter
         // "삐" 소리 재생을 위한 MediaPlayer 초기화
         mediaPlayer = MediaPlayer.create(requireContext(), R.raw.mp_beep)
+        mediaCountDown = MediaPlayer.create(requireContext(), R.raw.countdown)
         // lottie
         lottieAnimationView = fragmentCameraBinding.lottie
+        lottie_count = fragmentCameraBinding.lottieCount
         //tickerView
         tickerView = fragmentCameraBinding.tickerView
         tickerView.setCharacterLists(TickerUtils.provideNumberList())
-        countdownJob = CoroutineScope(Dispatchers.Main).launch {
-            startCountdown()
+
+
+        // 블루투스 데이터를 수신하기 위해 로컬 브로드캐스트 수신기를 등록합니다.
+        val intentFilter = IntentFilter("BLUETOOTH_DATA_RECEIVED")
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                if (intent?.action == "BLUETOOTH_DATA_RECEIVED") {
+                    val data = intent.getStringExtra("data")
+                    // 수신한 데이터를 필요에 따라 처리합니다.
+                    Log.d(TAG, "Received data_f: $data")
+                    // 데이터 처리 중으로 플래그 설정
+                    // 데이터 처리 중인 경우에만 작업을 실행
+                    if (!processingData) {
+                        launchDataProcessing()
+                    }
+
+                }
+            }
         }
-
-
-
-        showChart()
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver, intentFilter)
         return fragmentCameraBinding.root
+    }
+
+    private fun launchDataProcessing() {
+        processingData = true // 데이터 처리 중으로 플래그 설정
+        countDown()
+
     }
 
     private suspend fun startCountdown() {
@@ -304,152 +332,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             )
         }
 
-        // Attach listeners to UI control widgets
-//        initBottomSheetControls()
     }
 
-//    private fun initBottomSheetControls() {
-//        // init bottom sheet settings
-//
-//        fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-//            String.format(
-//                Locale.US, "%.2f", viewModel.currentMinPoseDetectionConfidence
-//            )
-//        fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-//            String.format(
-//                Locale.US, "%.2f", viewModel.currentMinPoseTrackingConfidence
-//            )
-//        fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-//            String.format(
-//                Locale.US, "%.2f", viewModel.currentMinPosePresenceConfidence
-//            )
-//
-//        // When clicked, lower pose detection score threshold floor
-//        fragmentCameraBinding.bottomSheetLayout.detectionThresholdMinus.setOnClickListener {
-//            if (poseLandmarkerHelper.minPoseDetectionConfidence >= 0.2) {
-//                poseLandmarkerHelper.minPoseDetectionConfidence -= 0.1f
-//                updateControlsUi()
-//            }
-//        }
-//
-//        // When clicked, raise pose detection score threshold floor
-//        fragmentCameraBinding.bottomSheetLayout.detectionThresholdPlus.setOnClickListener {
-//            if (poseLandmarkerHelper.minPoseDetectionConfidence <= 0.8) {
-//                poseLandmarkerHelper.minPoseDetectionConfidence += 0.1f
-//                updateControlsUi()
-//            }
-//        }
-//
-//        // When clicked, lower pose tracking score threshold floor
-//        fragmentCameraBinding.bottomSheetLayout.trackingThresholdMinus.setOnClickListener {
-//            if (poseLandmarkerHelper.minPoseTrackingConfidence >= 0.2) {
-//                poseLandmarkerHelper.minPoseTrackingConfidence -= 0.1f
-//                updateControlsUi()
-//            }
-//        }
-//
-//        // When clicked, raise pose tracking score threshold floor
-//        fragmentCameraBinding.bottomSheetLayout.trackingThresholdPlus.setOnClickListener {
-//            if (poseLandmarkerHelper.minPoseTrackingConfidence <= 0.8) {
-//                poseLandmarkerHelper.minPoseTrackingConfidence += 0.1f
-//                updateControlsUi()
-//            }
-//        }
-//
-//        // When clicked, lower pose presence score threshold floor
-//        fragmentCameraBinding.bottomSheetLayout.presenceThresholdMinus.setOnClickListener {
-//            if (poseLandmarkerHelper.minPosePresenceConfidence >= 0.2) {
-//                poseLandmarkerHelper.minPosePresenceConfidence -= 0.1f
-//                updateControlsUi()
-//            }
-//        }
-//
-//        // When clicked, raise pose presence score threshold floor
-//        fragmentCameraBinding.bottomSheetLayout.presenceThresholdPlus.setOnClickListener {
-//            if (poseLandmarkerHelper.minPosePresenceConfidence <= 0.8) {
-//                poseLandmarkerHelper.minPosePresenceConfidence += 0.1f
-//                updateControlsUi()
-//            }
-//        }
-//
-//        // When clicked, change the underlying hardware used for inference.
-//        // Current options are CPU and GPU
-//        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.setSelection(
-//            viewModel.currentDelegate, false
-//        )
-//        fragmentCameraBinding.bottomSheetLayout.spinnerDelegate.onItemSelectedListener =
-//            object : AdapterView.OnItemSelectedListener {
-//                override fun onItemSelected(
-//                    p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long
-//                ) {
-//                    try {
-//                        poseLandmarkerHelper.currentDelegate = p2
-//                        updateControlsUi()
-//                    } catch(e: UninitializedPropertyAccessException) {
-//                        Log.e(TAG, "PoseLandmarkerHelper has not been initialized yet.")
-//                    }
-//                }
-//
-//                override fun onNothingSelected(p0: AdapterView<*>?) {
-//                    /* no op */
-//                }
-//            }
-//
-//        // When clicked, change the underlying model used for object detection
-//        fragmentCameraBinding.bottomSheetLayout.spinnerModel.setSelection(
-//            viewModel.currentModel,
-//            false
-//        )
-//        fragmentCameraBinding.bottomSheetLayout.spinnerModel.onItemSelectedListener =
-//            object : AdapterView.OnItemSelectedListener {
-//                override fun onItemSelected(
-//                    p0: AdapterView<*>?,
-//                    p1: View?,
-//                    p2: Int,
-//                    p3: Long
-//                ) {
-//                    poseLandmarkerHelper.currentModel = p2
-//                    updateControlsUi()
-//                }
-//
-//                override fun onNothingSelected(p0: AdapterView<*>?) {
-//                    /* no op */
-//                }
-//            }
-//    }
 
-    // Update the values displayed in the bottom sheet. Reset Poselandmarker
-    // helper.
-//    private fun updateControlsUi() {
-//        if(this::poseLandmarkerHelper.isInitialized) {
-//            fragmentCameraBinding.bottomSheetLayout.detectionThresholdValue.text =
-//                String.format(
-//                    Locale.US,
-//                    "%.2f",
-//                    poseLandmarkerHelper.minPoseDetectionConfidence
-//                )
-//            fragmentCameraBinding.bottomSheetLayout.trackingThresholdValue.text =
-//                String.format(
-//                    Locale.US,
-//                    "%.2f",
-//                    poseLandmarkerHelper.minPoseTrackingConfidence
-//                )
-//            fragmentCameraBinding.bottomSheetLayout.presenceThresholdValue.text =
-//                String.format(
-//                    Locale.US,
-//                    "%.2f",
-//                    poseLandmarkerHelper.minPosePresenceConfidence
-//                )
-//
-//            // Needs to be cleared instead of reinitialized because the GPU
-//            // delegate needs to be initialized on the thread using it when applicable
-//            backgroundExecutor.execute {
-//                poseLandmarkerHelper.clearPoseLandmarker()
-//                poseLandmarkerHelper.setupPoseLandmarker()
-//            }
-//            fragmentCameraBinding.overlay.clear()
-//        }
-//    }
 
     // Initialize CameraX, and prepare to bind the camera use cases
     private fun setUpCamera() {
@@ -563,70 +448,32 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
             }
         }
     }
+    private fun countDown() {
+        // LottieAnimationView를 맨 앞으로 가져옵니다.
+        lottie_count.visibility = View.VISIBLE
+        lottie_count.bringToFront()
+        lottie_count.playAnimation()
+        playCountDownSound()
+        lottie_count.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(animation: Animator) {
 
-    // draw Line Chart
+            }
+            override fun onAnimationEnd(animation: Animator) {
+                fragmentCameraBinding.lottieCount.visibility = View.GONE
+                countdownJob = CoroutineScope(Dispatchers.Main).launch {
+                    startCountdown()
+                }
+                showChart()
+            }
 
-//    private fun showLineChart() {
-//        val entry_chart1 = ArrayList<Entry>()
-//
-//        // 1에서 5 사이의 랜덤 정수 값을 10개 추가
-//        val random = java.util.Random()
-//        for (i in 0 until 10) {
-//            val randomValue = (1 + random.nextInt(5)).toFloat()
-//            entry_chart1.add(Entry(i.toFloat(), randomValue))
-//        }
-//
-//        val lineDataSet1 = LineDataSet(entry_chart1, "LineGraph1")
-//        lineDataSet1.color = Color.RED
-//        lineDataSet1.mode = LineDataSet.Mode.CUBIC_BEZIER
-//        lineDataSet1.cubicIntensity = 0.2f
-//        //lineDataSet1.setCircleColor(getColor(R.color.blue_grey_400))
-//        lineDataSet1.setDrawCircleHole(false)
-//        lineDataSet1.setDrawValues(false)
-//
-//        val chartData = LineData(lineDataSet1)
-//
-//        lineChart.apply {
-//            setTouchEnabled(true)
-//            isClickable = false
-//            isDoubleTapToZoomEnabled = false
-//            setDrawBorders(false)
-//            setDrawGridBackground(false)
-//            description.isEnabled = false
-//            legend.isEnabled = false
-//
-//            axisLeft.apply {
-//                setDrawGridLines(false)
-//                setDrawLabels(false)
-//                setDrawAxisLine(false)
-//                removeAllLimitLines()
-//                addLimitLine(LimitLine(150f, "Upper Limit").apply {
-//                    lineWidth = 4f
-//                    enableDashedLine(10f, 10f, 0f)
-//                    labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-//                    //lineColor = getColor(R.color.blue_grey_400)
-//                    textSize = 10f
-//                })
-//            }
-//
-//            axisRight.apply {
-//                setDrawGridLines(false)
-//                setDrawLabels(false)
-//                setDrawAxisLine(false)
-//            }
-//
-//            xAxis.apply {
-//                enableGridDashedLine(16f, 12f, 0f)
-//                position = XAxis.XAxisPosition.BOTTOM
-//                setCenterAxisLabels(true)
-//            }
-//
-//            animateXY(2000, 2000)
-//            data = chartData
-//            invalidate()
-//            setTouchEnabled(true)
-//        }
-//    }
+            override fun onAnimationCancel(animation: Animator) {
+
+            }
+            override fun onAnimationRepeat(animation: Animator) {
+
+            }
+        })
+    }
 
     private fun showChart() {
         // 그래프 설정 및 초기 데이터 채우기
@@ -635,36 +482,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         setupLineChart()
         createChartData()
 
-        // 60부터 1까지의 숫자 리스트 생성
-        // 60부터 1까지의 숫자 리스트 생성
-
-
-
-
-
-//        // 실시간 업데이트를 위한 핸들러 설정
-//        val handler = Handler()
-//        val delay = 300L // 1초마다 업데이트
-//
-//        handler.postDelayed(object : Runnable {
-//            override fun run() {
-//                // 새 데이터 포인트 추가
-//                addRandomDataPoint()
-//
-//                // 그래프 업데이트
-//                updateChart()
-//                updateRecyclerView()
-//
-//                // 다음 업데이트 예약
-//                handler.postDelayed(this, delay)
-//            }
-//        }, delay)
-
         // 코루틴을 사용한 실시간 업데이트
         lifecycleScope.launch {
             val delayMillis = 500L // 0.5초마다 업데이트
-
-
 
             while (true) {
                 // 새 데이터 포인트 추가
@@ -690,6 +510,17 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         mediaPlayer?.seekTo(0) // 소리를 처음부터 재생
         mediaPlayer?.start() // 소리 재생
     }
+    private fun playCountDownSound() {
+        mediaCountDown?.seekTo(0) // 소리를 처음부터 재생
+        mediaCountDown?.start() // 소리 재생
+        mediaCountDown?.setOnCompletionListener { mp ->
+            // 미디어 재생이 완료될 때 실행할 동작을 여기에 추가합니다.
+            // 예를 들어, 종료 메시지를 표시하거나 다른 작업을 수행할 수 있습니다.
+            // 미디어 플레이어 해제
+            mp.release()
+        }
+    }
+
 
     private fun setupLineChart() {
         lineDataSet1 = LineDataSet(entry_chart1, "LineGraph1")
@@ -811,54 +642,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener {
         recyclerView.scrollToPosition(chartDataList.size - 1)
     }
 
-    //horizontal chart
 
-//    private fun configureChartAppearance() {
-//        horizontalBarChart.description.isEnabled = false // chart 밑에 description 표시 유무
-//        horizontalBarChart.setTouchEnabled(false) // 터치 유무
-//        horizontalBarChart.legend.isEnabled = false // Legend는 차트의 범례
-//        horizontalBarChart.setExtraOffsets(10f, 0f, 40f, 0f)
-//
-//        // XAxis (수평 막대 기준 왼쪽) - 선 유무, 사이즈, 색상, 축 위치 설정
-//        val xAxis: XAxis = horizontalBarChart.xAxis
-//        xAxis.apply {
-//            setDrawAxisLine(false)
-//            granularity = 1f
-//            textSize = 15f
-//            gridLineWidth = 25f
-//            gridColor = Color.parseColor("#80E5E5E5")
-//            position = XAxis.XAxisPosition.BOTTOM // X 축 데이터 표시 위치
-//        }
-//        xAxis.setDrawAxisLine(false)
-//        xAxis.granularity = 1f
-//        xAxis.textSize = 15f
-//        xAxis.gridLineWidth = 25f
-//        xAxis.gridColor = Color.parseColor("#80E5E5E5")
-//        xAxis.position = XAxis.XAxisPosition.BOTTOM // X 축 데이터 표시 위치
-//
-//        // YAxis(Left) (수평 막대 기준 아래쪽) - 선 유무, 데이터 최솟값/최댓값, label 유무
-//        val axisLeft: YAxis = horizontalBarChart.axisLeft
-//        axisLeft.setDrawGridLines(false)
-//        axisLeft.setDrawAxisLine(false)
-//        axisLeft.axisMinimum = 0f // 최솟값
-//        axisLeft.axisMaximum = 50f // 최댓값
-//        axisLeft.granularity = 1f // 값만큼 라인선 설정
-//        axisLeft.setDrawLabels(false) // label 삭제
-//
-//        // YAxis(Right) (수평 막대 기준 위쪽) - 사이즈, 선 유무
-//        val axisRight: YAxis = horizontalBarChart.axisRight
-//        axisRight.textSize = 15f
-//        axisRight.setDrawLabels(false) // label 삭제
-//        axisRight.setDrawGridLines(false)
-//        axisRight.setDrawAxisLine(false)
-//
-//        // XAxis에 원하는 String 설정하기 (앱 이름)
-////        xAxis.valueFormatter = object : ValueFormatter() {
-////            override fun getFormattedValue(value: Float): String {
-////                return APPS.get(value.toInt())
-////            }
-////        }
-//    }
 
     private fun setUpBarChartData () {
         // 1. [BarEntry] BarChart에 표시될 데이터 값 생성
