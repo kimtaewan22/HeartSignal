@@ -106,8 +106,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     private val entry_chart1 = ArrayList<Entry>()
     private lateinit var lineDataSet1: LineDataSet
     private lateinit var chartData: LineData
+    private val xValues = mutableListOf<Float>()
 
-    private val maxDataPoints = 10 // 최대 데이터 포인트 개수
+    private val maxDataPoints = 100 // 최대 데이터 포인트 개수
     private var currentTime = 0.0 // 현재 시간 값
     private val timeInterval = 0.5 // 핸들러 호출 간격 (초)
 
@@ -224,12 +225,21 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                 if (intent?.action == "BLUETOOTH_DATA_RECEIVED") {
                     val data = intent.getStringExtra("data")
                     // 수신한 데이터를 필요에 따라 처리합니다.
+
+                    // if data가 스위치 클릭한 데이터일때,
                     Log.d(TAG, "Received data_f: $data")
                     // 데이터 처리 중으로 플래그 설정
                     // 데이터 처리 중인 경우에만 작업을 실행
                     if (!processingData) {
                         launchDataProcessing()
                     }
+
+                    // if data가 스위치 클릭한 데이터가 아닐때,
+                    showChart()
+                    // 데이터를 그래프에 추가
+                    addBluetoothDataPoint(data!!)
+                    // 그래프 업데이트
+                    updateChart()
 
                 }
             }
@@ -241,7 +251,6 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     private fun launchDataProcessing() {
         processingData = true // 데이터 처리 중으로 플래그 설정
         countDown()
-
     }
 
     private suspend fun startCountdown() {
@@ -269,6 +278,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     private fun showLottieAnimation() {
         lottieAnimationView.repeatCount = 60
         lottieAnimationView.backgroundTintMode
+        lottieAnimationView.playAnimation()
         lottieAnimationView.addAnimatorListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
 
@@ -463,7 +473,6 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                 countdownJob = CoroutineScope(Dispatchers.Main).launch {
                     startCountdown()
                 }
-                showChart()
             }
 
             override fun onAnimationCancel(animation: Animator) {
@@ -479,7 +488,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
         // 그래프 설정 및 초기 데이터 채우기
         generateInitialData()
         setUpBarChartData()
-        setupLineChart()
+//        setupLineChart()
         createChartData()
 
         // 코루틴을 사용한 실시간 업데이트
@@ -488,13 +497,11 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
             while (true) {
                 // 새 데이터 포인트 추가
-                addRandomDataPoint()
                 updateBarChartData()
 
                 // UI 업데이트를 메인 스레드에서 수행
                 withContext(Dispatchers.Main) {
-                    // 그래프 업데이트
-                    updateChart()
+
                     updateRecyclerView()
                 }
                 // 타이머 소리 재생
@@ -532,12 +539,18 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
         lineDataSet1.setDrawFilled(true)
         lineDataSet1.fillColor = R.drawable.fade
 //        lineDataSet1.fillAlpha = 30 // 채우기 색상의 투명도 설정 (0-255 사이의 값)
-
+        val minX = xValues.minOrNull() ?: 0f
+        val maxX = xValues.maxOrNull() ?: 30f  // 기본값 설정 (원하는 범위로 설정)
+        Log.e(TAG, "minX: $minX, maxX: $maxX")
 
 //        lineDataSet1.mode = LineDataSet.Mode.LINEAR
-        lineDataSet1.cubicIntensity = 0.1f
+//        lineDataSet1.cubicIntensity = 0.1f
         lineDataSet1.setDrawCircleHole(false)
+        lineDataSet1.setDrawCircles(false)
         lineDataSet1.setDrawValues(false)
+        lineChart.xAxis.axisMaximum = maxX
+        lineChart.xAxis.axisMinimum = minX
+
 
         chartData = LineData(lineDataSet1)
 
@@ -549,6 +562,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
             setDrawGridBackground(false)
             description.isEnabled = false
             legend.isEnabled = false
+            isAutoScaleMinMaxEnabled = true
 
             axisLeft.apply {
                 setDrawGridLines(false)
@@ -569,8 +583,8 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                     enableDashedLine(10f, 10f, 0f) // 점선 형태 설정
                     textSize = 12f
                 })
-                axisMinimum = 0f // y-축 최소값 설정
-                axisMaximum = 6f // y-축 최대값 설정
+//                axisMinimum = 0f // y-축 최소값 설정
+//                axisMaximum = 6f // y-축 최대값 설정
             }
 
             axisRight.apply {
@@ -583,48 +597,65 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                 enableGridDashedLine(16f, 12f, 0f)
                 position = XAxis.XAxisPosition.BOTTOM
                 setCenterAxisLabels(true)
+                // x축의 범위를 업데이트합니다.
+
             }
 
-            animateXY(500, 500)
+//            animateXY(500, 500)
             data = chartData
             invalidate()
 //            setTouchEnabled(true)
-            data = chartData
-            invalidate()
         }
     }
 
 
     private fun generateInitialData() {
-        val random = java.util.Random()
-        var previousValue = 1f // 초기값 설정
-
-        for (i in 0 until maxDataPoints) {
-            val randomValue = previousValue + (1 + random.nextInt(5)).toFloat()
-            entry_chart1.add(Entry(i.toFloat(), randomValue))
-        }
+        entry_chart1.add(Entry(0f, 0f))
     }
 
-    private fun addRandomDataPoint() {
-        val random = java.util.Random()
-        val randomValue = (1 + random.nextInt(5)).toFloat()
+//    private fun addRandomDataPoint() {
+//        val random = java.util.Random()
+//        val randomValue = (1 + random.nextInt(5)).toFloat()
+//
+//        if (entry_chart1.size >= maxDataPoints) {
+//            // 최대 데이터 포인트 개수에 도달하면 첫 번째 데이터 포인트를 제거
+//            entry_chart1.removeAt(0)
+//            // x 좌표 업데이트
+//            for (i in 0 until entry_chart1.size) {
+//                entry_chart1[i].x = i.toFloat()
+//            }
+//        }
+//        chartDataList.add(Entry(currentTime.toFloat(), randomValue))
+//        // 새 데이터 포인트 추가
+//        entry_chart1.add(Entry(currentTime.toFloat(), randomValue))
+//        currentTime += timeInterval
+//    }
 
-        if (entry_chart1.size >= maxDataPoints) {
-            // 최대 데이터 포인트 개수에 도달하면 첫 번째 데이터 포인트를 제거
+    private fun addBluetoothDataPoint(data: String) {
+        val parts = data.replace("?","").split("_")
+        val time = (parts[0].toFloat() / 1000) // 첫 번째 부분
+        val intensity = parts[1].toFloat()
+        xValues.add(time)
+        // x 좌표 값 추가 및 관리
+        if (entry_chart1.size > maxDataPoints) {
+            // x 좌표 값이 최대 개수를 초과하면 이전 값 제거
             entry_chart1.removeAt(0)
-            // x 좌표 업데이트
+            xValues.removeAt(0)
             for (i in 0 until entry_chart1.size) {
-                entry_chart1[i].x = i.toFloat()
+                if (i < xValues.size) {
+                    entry_chart1[i].x = xValues[i]
+                }
             }
         }
-        chartDataList.add(Entry(currentTime.toFloat(), randomValue))
-        // 새 데이터 포인트 추가
-        entry_chart1.add(Entry(currentTime.toFloat(), randomValue))
+        chartDataList.add(Entry(time, intensity))
+        entry_chart1.add(Entry(time, intensity))
         currentTime += timeInterval
 
-//        currentIndex++
+        setupLineChart()
     }
     private fun updateChart() {
+
+
         chartData.notifyDataChanged()
         lineChart.notifyDataSetChanged()
         lineChart.invalidate()
