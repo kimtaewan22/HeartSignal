@@ -130,5 +130,8 @@ dependencies {
     //toggle
     implementation 'com.github.angads25:toggle:1.1.0'
 
+    // CircleMenu
+    implementation 'com.github.Hitomis:CircleMenu:v1.1.0'
+
 
 }
