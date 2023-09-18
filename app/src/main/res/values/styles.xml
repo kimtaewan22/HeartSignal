@@ -38,4 +38,13 @@
     <style name="AppThemeProgressStyle">
         <item name="colorAccent">@color/mp_color_primary_variant</item>
     </style>
+
+    <style name="Widget.App.NavigationRailView" parent="Widget.MaterialComponents.NavigationRailView.Colored">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.NavigationRailView</item>
+    </style>
+
+    <style name="ThemeOverlay.App.NavigationRailView" parent="">
+        <item name="colorPrimary">#9DACB3</item>
+        <item name="colorOnPrimary">#007CE8</item>
+    </style>
 </resources>
