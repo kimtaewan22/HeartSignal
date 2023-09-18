@@ -218,7 +218,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 0.0
             }
 
-        Log.d("CameraFragment","leftShoulderElbowWrist :$leftShoulderElbowWrist, rightShoulderElbowWrist: $rightShoulderElbowWrist")
+//        Log.d("CameraFragment","leftShoulderElbowWrist :$leftShoulderElbowWrist, rightShoulderElbowWrist: $rightShoulderElbowWrist")
 
         linePaint.color =
             ContextCompat.getColor(
