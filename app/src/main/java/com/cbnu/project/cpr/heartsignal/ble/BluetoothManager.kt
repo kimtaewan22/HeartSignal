@@ -27,6 +27,7 @@ class BluetoothManager(private val context: Context) {
     var deviceAddress: String? = ""
     val handler = Handler(Looper.getMainLooper())
     val serviceUUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
+    private var lastReceivedData: String? = null // 이전에 수신한 데이터를 저장하기 위한 변수
 
     fun connectToDevice(device: BluetoothDevice, connectedDeviceName: TextView, connectedDeviceAddr: TextView) {
         // 여기에서 BluetoothGattCallback 및 다른 필요한 변수를 초기화합니다.
@@ -151,11 +152,23 @@ class BluetoothManager(private val context: Context) {
                 val data = characteristic.value // 데이터를 바이트 배열로 가져옵니다.
                 val decodedData = String(data, Charset.forName("UTF-8")) // 데이터를 디코딩합니다.
 
+
+                // 이전에 수신한 데이터와 현재 수신한 데이터가 다를 경우에만 처리
+                if (decodedData != lastReceivedData) {
+                    // Local Broadcast Manager를 사용하여 데이터를 CameraFragment로 전송합니다.
+                    val intent = Intent("BLUETOOTH_DATA_RECEIVED")
+                    intent.putExtra("data", decodedData)
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+                    Log.d(TAG, "Received data: $decodedData")
+
+                    // 현재 수신한 데이터를 이전 데이터로 설정
+                    lastReceivedData = decodedData
+                }
                 // Local Broadcast Manager를 사용하여 데이터를 CameraFragment로 전송합니다.
-                val intent = Intent("BLUETOOTH_DATA_RECEIVED")
-                intent.putExtra("data", decodedData)
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
-                Log.d(TAG, "Received data: $decodedData")
+//                val intent = Intent("BLUETOOTH_DATA_RECEIVED")
+//                intent.putExtra("data", decodedData)
+//                LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+//                Log.d(TAG, "Received data: $decodedData")
             }
         }
 

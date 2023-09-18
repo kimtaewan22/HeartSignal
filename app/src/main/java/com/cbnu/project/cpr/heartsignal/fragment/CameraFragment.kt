@@ -225,28 +225,50 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                 if (intent?.action == "BLUETOOTH_DATA_RECEIVED") {
                     val data = intent.getStringExtra("data")
                     // 수신한 데이터를 필요에 따라 처리합니다.
-
                     // if data가 스위치 클릭한 데이터일때,
                     Log.d(TAG, "Received data_f: $data")
                     // 데이터 처리 중으로 플래그 설정
                     // 데이터 처리 중인 경우에만 작업을 실행
-                    if (!processingData) {
-                        launchDataProcessing()
+                    if(data!!.contains("SO")) {
+                        if (!processingData) {
+                            launchDataProcessing()
+
+                            generateInitialData()
+                            setUpBarChartData()
+                            //        setupLineChart()
+                            createChartData()
+                        }
                     }
+                    else {
+                        if(data!!.contains("SF"))
+                        {
+                            // 데이터 초기화
+                            entry_chart1.clear()
+                            xValues.clear()
+                            bar_entries.clear()
+                            //TODO 관련 데이터 초기화
 
-                    // if data가 스위치 클릭한 데이터가 아닐때,
-                    showChart()
-                    // 데이터를 그래프에 추가
-                    addBluetoothDataPoint(data!!)
-                    // 그래프 업데이트
-                    updateChart()
-
+                        }
+                        else{
+                            updateUI(data)
+                        }
+                    }
                 }
             }
         }
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver, intentFilter)
         return fragmentCameraBinding.root
     }
+    // UI 업데이트를 비동기로 처리하는 함수
+    private fun updateUI(data: String?) {
+        // 코루틴을 사용하여 메인 스레드에서 UI 업데이트 작업을 실행
+        lifecycleScope.launch(Dispatchers.Main) {
+            // UI 업데이트 작업을 여기에 배치
+            addBluetoothDataPoint(data!!)
+            updateChart()
+        }
+    }
+
 
     private fun launchDataProcessing() {
         processingData = true // 데이터 처리 중으로 플래그 설정
@@ -473,6 +495,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                 countdownJob = CoroutineScope(Dispatchers.Main).launch {
                     startCountdown()
                 }
+                showChart()
             }
 
             override fun onAnimationCancel(animation: Animator) {
@@ -486,10 +509,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
     private fun showChart() {
         // 그래프 설정 및 초기 데이터 채우기
-        generateInitialData()
-        setUpBarChartData()
-//        setupLineChart()
-        createChartData()
+
 
         // 코루틴을 사용한 실시간 업데이트
         lifecycleScope.launch {
@@ -501,7 +521,6 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
                 // UI 업데이트를 메인 스레드에서 수행
                 withContext(Dispatchers.Main) {
-
                     updateRecyclerView()
                 }
                 // 타이머 소리 재생
@@ -571,13 +590,13 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                 removeAllLimitLines()
 
                 // 수평선 추가
-                addLimitLine(LimitLine(3.5f).apply {
+                addLimitLine(LimitLine(400.5f).apply {
                     lineWidth = 1f // 수평선 두께
                     lineColor = Color.BLUE // 수평선 색상
                     enableDashedLine(10f, 10f, 0f) // 점선 형태 설정
                     textSize = 12f
                 })
-                addLimitLine(LimitLine(4.5f).apply {
+                addLimitLine(LimitLine(500.5f).apply {
                     lineWidth = 1f // 수평선 두께
                     lineColor = Color.BLUE // 수평선 색상
                     enableDashedLine(10f, 10f, 0f) // 점선 형태 설정
@@ -632,26 +651,33 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 //    }
 
     private fun addBluetoothDataPoint(data: String) {
-        val parts = data.replace("?","").split("_")
-        val time = (parts[0].toFloat() / 1000) // 첫 번째 부분
-        val intensity = parts[1].toFloat()
-        xValues.add(time)
-        // x 좌표 값 추가 및 관리
-        if (entry_chart1.size > maxDataPoints) {
-            // x 좌표 값이 최대 개수를 초과하면 이전 값 제거
-            entry_chart1.removeAt(0)
-            xValues.removeAt(0)
-            for (i in 0 until entry_chart1.size) {
-                if (i < xValues.size) {
-                    entry_chart1[i].x = xValues[i]
+        if(data.contains("_"))
+        {
+            val parts = data.replace("?","").split("_")
+            val time = (parts[0].toFloat() / 1000) // 첫 번째 부분
+            val intensity = parts[1].toFloat()
+
+            xValues.add(time)
+            Log.d("CAMERAFRAGMENT", xValues.toString())
+
+            // x 좌표 값 추가 및 관리
+            if (entry_chart1.size > maxDataPoints) {
+                // x 좌표 값이 최대 개수를 초과하면 이전 값 제거
+                entry_chart1.removeAt(0)
+                xValues.removeAt(0)
+                for (i in 0 until entry_chart1.size) {
+                    if (i < xValues.size) {
+                        entry_chart1[i].x = xValues[i]
+                    }
                 }
             }
-        }
-        chartDataList.add(Entry(time, intensity))
-        entry_chart1.add(Entry(time, intensity))
-        currentTime += timeInterval
 
-        setupLineChart()
+            chartDataList.add(Entry(time, intensity))
+            entry_chart1.add(Entry(time, intensity))
+            currentTime += timeInterval
+
+            setupLineChart()
+        }
     }
     private fun updateChart() {
 
