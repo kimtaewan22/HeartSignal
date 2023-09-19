@@ -52,12 +52,12 @@ class Step0Activity : AppCompatActivity() {
     }
     private fun setupSampleLayout1() {
         val hover = LayoutInflater.from(mContext).inflate(R.layout.hover_sample, null)
-        hover.findViewById<View>(R.id.heart).setOnClickListener {
+        hover.findViewById<View>(R.id.mode_single1).setOnClickListener {
             YoYo.with(Techniques.Tada)
                 .duration(550)
                 .playOn(it)
         }
-        hover.findViewById<View>(R.id.share).setOnClickListener {
+        hover.findViewById<View>(R.id.mode_single2).setOnClickListener {
             YoYo.with(Techniques.Swing)
                 .duration(550)
                 .playOn(it)
@@ -65,13 +65,13 @@ class Step0Activity : AppCompatActivity() {
         mSampleLayout.setHoverView(hover)
         mSampleLayout.setBlurDuration(550)
 
-        mSampleLayout.addChildAppearAnimator(hover, R.id.heart, Techniques.FlipInX, 550, 0)
-        mSampleLayout.addChildAppearAnimator(hover, R.id.share, Techniques.FlipInX, 550, 250)
-        mSampleLayout.addChildAppearAnimator(hover, R.id.more, Techniques.FlipInX, 550, 500)
+        mSampleLayout.addChildAppearAnimator(hover, R.id.mode_single1, Techniques.FlipInX, 550, 0)
+        mSampleLayout.addChildAppearAnimator(hover, R.id.mode_single2, Techniques.FlipInX, 550, 250)
+//        mSampleLayout.addChildAppearAnimator(hover, R.id.more, Techniques.FlipInX, 550, 500)
 
-        mSampleLayout.addChildDisappearAnimator(hover, R.id.heart, Techniques.FlipOutX, 550, 500)
-        mSampleLayout.addChildDisappearAnimator(hover, R.id.share, Techniques.FlipOutX, 550, 250)
-        mSampleLayout.addChildDisappearAnimator(hover, R.id.more, Techniques.FlipOutX, 550, 0)
+        mSampleLayout.addChildDisappearAnimator(hover, R.id.mode_single1, Techniques.FlipOutX, 550, 500)
+        mSampleLayout.addChildDisappearAnimator(hover, R.id.mode_single2, Techniques.FlipOutX, 550, 250)
+//        mSampleLayout.addChildDisappearAnimator(hover, R.id.more, Techniques.FlipOutX, 550, 0)
 
         mSampleLayout.addChildAppearAnimator(hover, R.id.description, Techniques.FadeInUp)
         mSampleLayout.addChildDisappearAnimator(hover, R.id.description, Techniques.FadeOutDown)
