@@ -174,4 +174,8 @@ dependencies {
 
     implementation 'devlight.io:arcprogressstackview:1.0.4'
     implementation 'com.github.john990:WaveView:v0.9'
+
+    //circle imageView
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
 }
