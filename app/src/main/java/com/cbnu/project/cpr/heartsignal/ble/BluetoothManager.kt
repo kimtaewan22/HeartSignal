@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import es.dmoral.toasty.Toasty
 import java.nio.charset.Charset
 import java.util.UUID
 
@@ -56,7 +57,7 @@ class BluetoothManager(private val context: Context) {
                         ) {
                             return@post
                         }
-                        Toast.makeText(context, "연결 성공! : ${gatt?.device?.name} , ${gatt?.device?.address}  ", Toast.LENGTH_SHORT).show()
+                        Toasty.success(context, "연결 성공! : ${gatt?.device?.name} , ${gatt?.device?.address}", Toast.LENGTH_SHORT, true).show();
                         // BluetoothGatt 객체로부터 서비스 목록을 가져옵니다.
                         deviceName = gatt?.device?.name
                         deviceAddress = gatt?.device?.address
@@ -86,7 +87,7 @@ class BluetoothManager(private val context: Context) {
                     // 연결이 해제된 경우
                     handler.post {
                         // UI 스레드에서 Toast 띄우기
-                        Toast.makeText(context, "연결 해제", Toast.LENGTH_SHORT).show()
+                        Toasty.info(context, "연결 해제", Toast.LENGTH_SHORT, true).show();
                     }
 
                     // 연결이 끊어졌으므로 BluetoothGatt를 닫아야 합니다.
