@@ -28,4 +28,7 @@
         <item>#dddddd</item>
     </string-array>
 
+    <array name="badge1">양</array>
+    <array name="badge1_img">R</array>
+
 </resources>

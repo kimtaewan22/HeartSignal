@@ -189,5 +189,19 @@ dependencies {
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.5'
 
 //        compile 'com.github.bmarrdev:android-DecoView-charting:v1.2'
+    implementation 'com.github.magic-goop:tag-sphere:1.0.0'
+
+    //TransitionButton
+    implementation 'com.royrodriguez:transitionbutton:0.2.0'
+
+    //RotatingText
+    implementation 'com.sdsmdg.harjot:rotatingtext:1.0.2'
+
+//    implementation 'com.jawnnypoo:physicslayout:3.0.1'
+//    implementation 'com.github.takusemba:spotlight:2.0.5'
+    implementation 'com.github.igalata:Bubble-Picker:v0.2.4'
+//    implementation 'io.github.shashank02051997:FancyToast:2.0.2'
+    implementation "com.github.lisawray.groupie:groupie:2.10.1"
+
 
 }

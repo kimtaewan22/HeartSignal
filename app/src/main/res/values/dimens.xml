@@ -36,7 +36,7 @@
     <dimen name="record_bottom_sheet_content_margin_top">16dp</dimen>
     <dimen name="record_bottom_sheet_subtitle_bg_radius">20dp</dimen>
     <dimen name="record_bottom_sheet_subtitle_bg_padding">10dp</dimen>
-
+    <dimen name="tag_text_size">20sp</dimen>
     <integer name="bottom_sheet_control_text_min_ems">3</integer>
     <dimen name="fab_margin">16dp</dimen>
 </resources>

@@ -3,19 +3,19 @@ package com.cbnu.project.cpr.heartsignal.fragment.mainFragment
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.anychart.AnyChart
-import com.anychart.AnyChartView
-import com.anychart.chart.common.dataentry.SingleValueDataSet
-import com.anychart.charts.CircularGauge
-import com.anychart.graphics.vector.SolidFill
-import com.anychart.graphics.vector.text.HAlign
+import com.cbnu.project.cpr.heartsignal.R
+import com.cbnu.project.cpr.heartsignal.custom.VectorDrawableTagItem
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentMainHomeBinding
+import com.cbnu.project.cpr.heartsignal.fragment.BadgeShowFragment
 import com.db.williamchart.slidertooltip.SliderTooltip
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.RadarChart
@@ -25,8 +25,12 @@ import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet
+import com.magicgoop.tagsphere.OnTagTapListener
+import com.magicgoop.tagsphere.item.TagItem
 import com.marvel999.acr.ArcProgress
-import com.anychart.enums.Anchor;
+import com.sdsmdg.harjot.rotatingtext.RotatingTextWrapper
+import com.sdsmdg.harjot.rotatingtext.models.Rotatable
+import es.dmoral.toasty.Toasty
 
 
 class MainHomeFragment : Fragment() {
@@ -34,9 +38,8 @@ class MainHomeFragment : Fragment() {
     private var _binding: FragmentMainHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var radarChart: RadarChart
-    private lateinit var progress: ProgressBar
-    private val fillColor = Color.argb(150, 51, 181, 229)
-
+    private lateinit var rotatingTextWrapper: RotatingTextWrapper
+    private lateinit var rotatable: Rotatable
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,11 +73,11 @@ class MainHomeFragment : Fragment() {
         // Initialize and set up the chart
         initializeRadarChart()
         setRadarData()
-
         radarChart.animateXY(1400, 1400, Easing.EaseInOutQuad)
 
         setUpArcProgress()
-        setUpVectorCircular()
+        initTagView()
+//        setUpRotatingText()
 
         return view
     }
@@ -83,12 +86,33 @@ class MainHomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // 다시 화면에 표시될 때 수행할 작업을 여기에 추가
+    }
 
+    override fun onResume() {
+        super.onResume()
+        // 다시 화면에 표시될 때 수행할 작업을 여기에 추가
+    }
     private fun setUpArcProgress() {
         val arc_img: ArcProgress = binding.arcImg
         val progress = 50f
         arc_img.setProgressWithAnimation(progress)
     }
+
+//    private fun setUpRotatingText() {
+//        rotatingTextWrapper = binding.customSwitcher
+//
+//        rotatingTextWrapper.size = 30
+//        rotatable = Rotatable(Color.parseColor("#FFA036"), 1500, "출석 달성도", "총 달성도", "미션 달성도")
+//        rotatable.size = 25f
+//        rotatable.isCenter = true
+//        rotatable.animationDuration = 500
+//
+//        rotatingTextWrapper.setContent("내 미션패스 > ?", rotatable)
+//    }
+
 
 //    private fun setUpProgress() {
 //        progress = binding.progressbar
@@ -236,78 +260,116 @@ class MainHomeFragment : Fragment() {
         )
 
         private const val animationDuration = 1000L
-    }
 
-
-    private fun setUpVectorCircular() {
-        val anyChartView: AnyChartView = binding.anyChartView
-        anyChartView.setProgressBar(binding.progressBar)
-
-        val circularGauge: CircularGauge = AnyChart.circular()
-        circularGauge.animation(true, 3000)
-        circularGauge.fill("#fff")
-            .stroke("null")
-            .padding(0, 0, 0, 0)
-            .margin(30, 30, 30, 30)
-            .startAngle(0)
-            .sweepAngle(360)
-
-        circularGauge.data(SingleValueDataSet(arrayOf<Double>(18.1)))
-
-        circularGauge.axis(0)
-            .startAngle(0)
-            .radius(80)
-            .sweepAngle(360)
-            .width(3)
-            .drawFirstLabel(false)
-            .ticks("{ type: 'line', length: 4, position: 'outside' }")
-
-        circularGauge.axis(0).labels()
-            .position("outside")
-            .useHtml(true)
-        circularGauge.axis(0).labels().format(
-            """function () {
-    return this.value + '&deg;'
-  }"""
+        val drawableResList = listOf(
+            R.drawable.ic_badge_01,
+            R.drawable.ic_badge_02,
+            R.drawable.ic_badge_03,
+            R.drawable.ic_badge_04,
+            R.drawable.ic_badge_05,
+            R.drawable.ic_badge_06,
+            R.drawable.ic_badge_07,
+            R.drawable.ic_badge_08,
+            R.drawable.ic_badge_09,
+            R.drawable.ic_badge_10,
+            R.drawable.ic_badge_11,
+            R.drawable.ic_badge_12
         )
-
-        circularGauge.axis(0).scale()
-            .minimum(0)
-            .maximum(360)
-        circularGauge.axis(0).scale()
-            .ticks("{interval: 45}")
-            .minorTicks("{interval: 10}")
-
-
-        circularGauge.marker(0)
-            .fill(SolidFill("#64b5f6", 1))
-            .stroke("null")
-        circularGauge.marker(0)
-            .size(7)
-            .radius(80)
-
-
-        circularGauge.label(0)
-            .text("<span style=\"font-size: 25\"></span>")
-            .useHtml(true)
-            .hAlign(HAlign.CENTER)
-        circularGauge.label(0)
-            .anchor(Anchor.CENTER_TOP)
-            .offsetY(50)
-            .padding(15, 20, 0, 0)
-
-        circularGauge.label(1)
-            .text("<span style=\"font-size: 20\">18.1</span>")
-            .useHtml(true)
-            .hAlign(HAlign.CENTER)
-        circularGauge.label(1)
-            .anchor(Anchor.CENTER_TOP)
-            .offsetY(-20)
-            .padding(5, 10, 0, 0)
-            .background("{fill: 'none', stroke: '#c1c1c1', corners: 3, cornerType: 'ROUND'}")
-
-        anyChartView.setChart(circularGauge)
     }
+
+    private fun initTagView() {
+        val tags = mutableListOf<VectorDrawableTagItem>()
+        drawableResList.forEach { id ->
+            getVectorDrawable(id)?.let {
+                tags.add(VectorDrawableTagItem(it))
+            }
+        }
+        binding.tagView.addTagList(tags)
+        binding.tagView.setRadius(2.75f)
+        binding.tagView.startAutoRotation()
+        binding.tagView.setOnTagTapListener(object : OnTagTapListener {
+            override fun onTap(tagItem: TagItem) {
+                Toasty.info(requireContext(), "도감", Toast.LENGTH_SHORT, true).show();
+                val fragment = BadgeShowFragment()
+                val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.mainFragmentContainer, fragment) // fragment_container는 프래그먼트를 호스팅하는 컨테이너 레이아웃의 ID입니다.
+                transaction.addToBackStack(null) // 이전 프래그먼트로 돌아갈 수 있도록 스택에 추가합니다.
+                transaction.commit()
+            }
+        })
+    }
+    private fun getVectorDrawable(id: Int): Drawable? =
+        ContextCompat.getDrawable(requireContext(), id)
+
+//    private fun setUpVectorCircular() {
+//        val anyChartView: AnyChartView = binding.anyChartView
+//        anyChartView.setProgressBar(binding.progressBar)
+//
+//        val circularGauge: CircularGauge = AnyChart.circular()
+//        circularGauge.animation(true, 3000)
+//        circularGauge.fill("#fff")
+//            .stroke("null")
+//            .padding(0, 0, 0, 0)
+//            .margin(30, 30, 30, 30)
+//            .startAngle(0)
+//            .sweepAngle(360)
+//
+//        circularGauge.data(SingleValueDataSet(arrayOf<Double>(18.1)))
+//
+//        circularGauge.axis(0)
+//            .startAngle(0)
+//            .radius(80)
+//            .sweepAngle(360)
+//            .width(3)
+//            .drawFirstLabel(false)
+//            .ticks("{ type: 'line', length: 4, position: 'outside' }")
+//
+//        circularGauge.axis(0).labels()
+//            .position("outside")
+//            .useHtml(true)
+//        circularGauge.axis(0).labels().format(
+//            """function () {
+//    return this.value + '&deg;'
+//  }"""
+//        )
+//
+//        circularGauge.axis(0).scale()
+//            .minimum(0)
+//            .maximum(360)
+//        circularGauge.axis(0).scale()
+//            .ticks("{interval: 45}")
+//            .minorTicks("{interval: 10}")
+//
+//
+//        circularGauge.marker(0)
+//            .fill(SolidFill("#64b5f6", 1))
+//            .stroke("null")
+//        circularGauge.marker(0)
+//            .size(7)
+//            .radius(80)
+//
+//
+//        circularGauge.label(0)
+//            .text("<span style=\"font-size: 25\"></span>")
+//            .useHtml(true)
+//            .hAlign(HAlign.CENTER)
+//        circularGauge.label(0)
+//            .anchor(Anchor.CENTER_TOP)
+//            .offsetY(50)
+//            .padding(15, 20, 0, 0)
+//
+//        circularGauge.label(1)
+//            .text("<span style=\"font-size: 20\">18.1</span>")
+//            .useHtml(true)
+//            .hAlign(HAlign.CENTER)
+//        circularGauge.label(1)
+//            .anchor(Anchor.CENTER_TOP)
+//            .offsetY(-20)
+//            .padding(5, 10, 0, 0)
+//            .background("{fill: 'none', stroke: '#c1c1c1', corners: 3, cornerType: 'ROUND'}")
+//
+//        anyChartView.setChart(circularGauge)
+//    }
 
 }
 

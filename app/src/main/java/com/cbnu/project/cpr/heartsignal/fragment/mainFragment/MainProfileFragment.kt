@@ -27,11 +27,11 @@ class MainProfileFragment : Fragment() {
         _binding = FragmentMainProfileBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        regular = binding.stencilSample
-        customFont = binding.stencilSampleWithCustomFont
-
-        regular.animatePath()
-        customFont.animatePath()
+//        regular = binding.stencilSample
+//        customFont = binding.stencilSampleWithCustomFont
+//
+//        regular.animatePath()
+//        customFont.animatePath()
 
 
         return view

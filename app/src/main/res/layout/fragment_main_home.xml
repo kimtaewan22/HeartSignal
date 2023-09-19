@@ -24,25 +24,169 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/profile_image"
-                android:layout_width="140dp"
-                android:layout_height="140dp"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
                 android:src="@drawable/ic_circle_profile"
-                android:layout_gravity="top"
+                android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="30dp"
                 app:civ_border_width="2dp"
                 app:civ_border_color="#FF000000"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:layout_marginLeft="20dp"
-                android:layout_gravity="top"
-                android:text="김태완"
-                android:textColor="@color/bottom_sheet_background"
-                android:textSize="26sp"
-                android:textStyle="bold"/>
+<!--            <LinearLayout-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="30dp"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:orientation="vertical">-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="80dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_gravity="top"
+                    android:text="김태완"
+                    android:textColor="@color/bottom_sheet_background"
+                    android:textSize="26sp"
+                    android:textStyle="bold"/>
+
+<!--                <com.google.android.material.card.MaterialCardView-->
+<!--                    android:id="@+id/card_stats"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    app:cardBackgroundColor="@color/background_color"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    app:cardElevation="4dp"-->
+<!--                    app:cardUseCompatPadding="true">-->
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent">-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/textView31"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="16dp"-->
+<!--                            android:layout_marginTop="8dp"-->
+<!--                            android:layout_marginEnd="16dp"-->
+<!--                            android:text="김태완's Stats"-->
+<!--                            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/text_number_of_capsules"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="8dp"-->
+<!--                            android:layout_marginEnd="8dp"-->
+<!--                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                            app:layout_constraintBottom_toBottomOf="@+id/text_number_of_launches"-->
+<!--                            app:layout_constraintEnd_toStartOf="@+id/text_number_of_launches"-->
+<!--                            app:layout_constraintHorizontal_bias="0.5"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="@+id/text_number_of_launches"-->
+<!--                            android:textColor="@color/warning_stroke_color"-->
+<!--                            tools:text="86" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/text_number_of_cores"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="8dp"-->
+<!--                            android:layout_marginEnd="8dp"-->
+<!--                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                            app:layout_constraintBottom_toBottomOf="@+id/text_number_of_launches"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintHorizontal_bias="0.5"-->
+<!--                            app:layout_constraintStart_toEndOf="@+id/text_number_of_launches"-->
+<!--                            app:layout_constraintTop_toTopOf="@+id/text_number_of_launches"-->
+<!--                            tools:text="Off" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/text_number_of_launches"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="8dp"-->
+<!--                            android:layout_marginTop="8dp"-->
+<!--                            android:layout_marginEnd="8dp"-->
+<!--                            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"-->
+<!--                            app:layout_constraintEnd_toStartOf="@+id/text_number_of_cores"-->
+<!--                            app:layout_constraintHorizontal_bias="0.5"-->
+<!--                            app:layout_constraintStart_toEndOf="@+id/text_number_of_capsules"-->
+<!--                            app:layout_constraintTop_toBottomOf="@+id/textView31"-->
+<!--                            tools:text="135" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/text_label_capsules"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:padding="4dp"-->
+<!--                            android:text="게임 횟수"-->
+<!--                            android:textColor="@color/colorSecondary"-->
+<!--                            android:textStyle="bold"-->
+<!--                            app:layout_constraintEnd_toEndOf="@+id/text_number_of_capsules"-->
+<!--                            app:layout_constraintStart_toStartOf="@+id/text_number_of_capsules"-->
+<!--                            app:layout_constraintTop_toBottomOf="@+id/text_number_of_capsules" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/text_label_launches"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginBottom="8dp"-->
+<!--                            android:padding="4dp"-->
+<!--                            android:text="승리 횟수"-->
+<!--                            android:textColor="@color/colorSecondary"-->
+<!--                            android:textStyle="bold"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="@+id/text_number_of_launches"-->
+<!--                            app:layout_constraintStart_toStartOf="@+id/text_number_of_launches"-->
+<!--                            app:layout_constraintTop_toBottomOf="@+id/text_number_of_launches" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/text_label_cores"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:padding="4dp"-->
+<!--                            android:text="블루투스 연결"-->
+<!--                            android:textColor="@color/colorSecondary"-->
+<!--                            android:textStyle="bold"-->
+<!--                            app:layout_constraintEnd_toEndOf="@+id/text_number_of_cores"-->
+<!--                            app:layout_constraintStart_toStartOf="@+id/text_number_of_cores"-->
+<!--                            app:layout_constraintTop_toBottomOf="@+id/text_number_of_cores" />-->
+
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+<!--                </com.google.android.material.card.MaterialCardView>-->
+
+
+<!--                <androidx.cardview.widget.CardView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:cardBackgroundColor="@color/gr_balck"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    >-->
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="2dp"-->
+<!--                        app:cardBackgroundColor="@color/background_color">-->
+<!--                        <com.sdsmdg.harjot.rotatingtext.RotatingTextWrapper-->
+<!--                            android:id="@+id/custom_switcher"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_margin="10dp"-->
+<!--                            />-->
+
+<!--                    </androidx.cardview.widget.CardView>-->
+
+<!--                </androidx.cardview.widget.CardView>-->
+
+
+<!--            </LinearLayout>-->
+
+
         </LinearLayout>
 
         <LinearLayout
@@ -55,22 +199,29 @@
                 android:layout_height="match_parent"
                 >
 
-                <com.anychart.AnyChartView
-                    android:id="@+id/any_chart_view"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_launches_chart"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:progress="0"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/background_color"
+                    app:cardUseCompatPadding="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.magicgoop.tagsphere.TagSphereView
+                        android:id="@+id/tagView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:rotateOnTouch="true" />
+
+                </com.google.android.material.card.MaterialCardView>
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

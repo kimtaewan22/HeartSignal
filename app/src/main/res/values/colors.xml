@@ -49,6 +49,9 @@
     <color name="polluted_waves4">#43abae</color>
     <color name="gr_balck">#011C03</color>
     <color name="card_background_border_color">#EDEDED</color>
-
+    <color name="colorSecondary">#ffab91</color>
+    <color name="colorSecondaryLight">#ffddc1</color>
+    <color name="colorSecondaryDark">#c97b63</color>
+    <color name="colorOnSecondary">#212121</color>
 
 </resources>
