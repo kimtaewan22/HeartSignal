@@ -41,5 +41,12 @@
     <color name="correct_pose">#88FF00</color>
     <color name="incorrect_pose">#FF0000</color>
 
+    <color name="background_color">#3C4152</color>
+
+    <color name="polluted_waves1">#394948</color>
+    <color name="polluted_waves2">#5a7874</color>
+    <color name="polluted_waves3">#499092</color>
+    <color name="polluted_waves4">#43abae</color>
+
 
 </resources>
