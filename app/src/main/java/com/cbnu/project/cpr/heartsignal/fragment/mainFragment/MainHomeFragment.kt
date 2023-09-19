@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
+import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentMainHomeBinding
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.RadarChart
@@ -18,6 +19,7 @@ import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet
+import com.marvel999.acr.ArcProgress
 
 class MainHomeFragment : Fragment() {
 
@@ -34,7 +36,6 @@ class MainHomeFragment : Fragment() {
         _binding = FragmentMainHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        progress = binding.progressbar
         radarChart = binding.homeRadarChart
         radarChart.setBackgroundColor(Color.rgb(60, 65, 82))
         radarChart.description.isEnabled = false
@@ -44,21 +45,8 @@ class MainHomeFragment : Fragment() {
         setData()
 
         radarChart.animateXY(1400, 1400, Easing.EaseInOutQuad)
-        // 프로그레스바의 현재 값
-        val currentProgress = progress.progress
 
-        // 원하는 최종 프로그레스 값
-        val targetProgress = 70
-
-        // ValueAnimator를 사용하여 애니메이션 생성
-        val animator = ValueAnimator.ofInt(currentProgress, targetProgress)
-        animator.duration = 1000 // 애니메이션 지속 시간 (밀리초)
-
-        animator.addUpdateListener { valueAnimator ->
-            val animatedValue = valueAnimator.animatedValue as Int
-            progress.progress = animatedValue // 프로그레스바 값 업데이트
-        }
-        animator.start() // 애니메이션 시작
+        setUpArcProgress()
 
 
         return view
@@ -68,6 +56,30 @@ class MainHomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun setUpArcProgress() {
+        val arc_img: ArcProgress = binding.arcImg
+        val progress = 50f
+        arc_img.setProgressWithAnimation(progress)
+    }
+
+//    private fun setUpProgress() {
+//        progress = binding.progressbar
+//        // 프로그레스바의 현재 값
+//        val currentProgress = progress.progress
+//        // 원하는 최종 프로그레스 값
+//        val targetProgress = 70
+//
+//        // ValueAnimator를 사용하여 애니메이션 생성
+//        val animator = ValueAnimator.ofInt(currentProgress, targetProgress)
+//        animator.duration = 1000 // 애니메이션 지속 시간 (밀리초)
+//
+//        animator.addUpdateListener { valueAnimator ->
+//            val animatedValue = valueAnimator.animatedValue as Int
+//            progress.progress = animatedValue // 프로그레스바 값 업데이트
+//        }
+//        animator.start() // 애니메이션 시작
+//    }
 
     private fun initializeRadarChart() {
         radarChart.webLineWidth = 1f

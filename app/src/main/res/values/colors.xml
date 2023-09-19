@@ -47,6 +47,8 @@
     <color name="polluted_waves2">#5a7874</color>
     <color name="polluted_waves3">#499092</color>
     <color name="polluted_waves4">#43abae</color>
+    <color name="gr_balck">#011C03</color>
+    <color name="card_background_border_color">#EDEDED</color>
 
 
 </resources>
