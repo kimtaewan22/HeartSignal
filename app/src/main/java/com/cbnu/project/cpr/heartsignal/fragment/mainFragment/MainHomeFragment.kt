@@ -1,25 +1,30 @@
 package com.cbnu.project.cpr.heartsignal.fragment.mainFragment
 
-import android.graphics.SurfaceTexture
-import android.media.MediaPlayer
-import android.net.Uri
+
+import android.animation.ValueAnimator
+import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.Surface
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.MediaController
-import com.cbnu.project.cpr.heartsignal.R
+import android.widget.ProgressBar
+import androidx.fragment.app.Fragment
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentMainHomeBinding
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.charts.RadarChart
+import com.github.mikephil.charting.components.Legend
+import com.github.mikephil.charting.data.RadarData
+import com.github.mikephil.charting.data.RadarDataSet
+import com.github.mikephil.charting.data.RadarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet
 
 class MainHomeFragment : Fragment() {
 
-    private lateinit var homeTextureView: TextureView
     private var _binding: FragmentMainHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var radarChart: RadarChart
+    private lateinit var progress: ProgressBar
 
 
     override fun onCreateView(
@@ -29,8 +34,32 @@ class MainHomeFragment : Fragment() {
         _binding = FragmentMainHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        homeTextureView = binding.homeVideoTextureView
-        initVideoPlayer()
+        progress = binding.progressbar
+        radarChart = binding.homeRadarChart
+        radarChart.setBackgroundColor(Color.rgb(60, 65, 82))
+        radarChart.description.isEnabled = false
+
+        // Initialize and set up the chart
+        initializeRadarChart()
+        setData()
+
+        radarChart.animateXY(1400, 1400, Easing.EaseInOutQuad)
+        // 프로그레스바의 현재 값
+        val currentProgress = progress.progress
+
+        // 원하는 최종 프로그레스 값
+        val targetProgress = 70
+
+        // ValueAnimator를 사용하여 애니메이션 생성
+        val animator = ValueAnimator.ofInt(currentProgress, targetProgress)
+        animator.duration = 1000 // 애니메이션 지속 시간 (밀리초)
+
+        animator.addUpdateListener { valueAnimator ->
+            val animatedValue = valueAnimator.animatedValue as Int
+            progress.progress = animatedValue // 프로그레스바 값 업데이트
+        }
+        animator.start() // 애니메이션 시작
+
 
         return view
     }
@@ -40,42 +69,88 @@ class MainHomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun initVideoPlayer() {
-        // 동영상 파일의 경로 또는 URL을 설정
-        val videoUri = Uri.parse("android.resource://${requireContext().packageName}/raw/homevideo")
+    private fun initializeRadarChart() {
+        radarChart.webLineWidth = 1f
+        radarChart.webColor = Color.LTGRAY
+        radarChart.webLineWidthInner = 1f
+        radarChart.webColorInner = Color.LTGRAY
+        radarChart.webAlpha = 100
 
-        // MediaController를 사용하여 컨트롤러 추가 (선택 사항)
-        val mediaController = MediaController(requireContext())
-        mediaController.setAnchorView(homeTextureView)
 
-        // TextureView에 SurfaceTextureListener 설정
-        homeTextureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-            override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-                startVideoPlayback(videoUri, surface)
-            }
+        val xAxis = radarChart.xAxis
+        xAxis.textSize = 12f
+        xAxis.yOffset = 0f
+        xAxis.xOffset = 0f
+        val labels = arrayOf("압박 강도", "음성 인식", "압박 횟수", "시간", "정확도")
 
-            override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
+        xAxis.setValueFormatter(object : IndexAxisValueFormatter(labels){})
+        xAxis.textColor = Color.WHITE
 
-            override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-                mediaPlayer.release()
-                return true
-            }
+        val yAxis = radarChart.yAxis
+//        yAxis.typeface = tfLight
+        yAxis.setLabelCount(5, false)
+        yAxis.textSize = 9f
+        yAxis.axisMinimum = 0f
+        yAxis.axisMaximum = 80f
+        yAxis.setDrawLabels(false)
 
-            override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
-        }
+        val l = radarChart.legend
+        l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
+        l.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
+        l.orientation = Legend.LegendOrientation.HORIZONTAL
+        l.setDrawInside(false)
+//        l.typeface = tfLight
+        l.xEntrySpace = 7f
+        l.yEntrySpace = 5f
+        l.textColor = Color.WHITE
     }
 
-    private fun startVideoPlayback(videoUri: Uri, surface: SurfaceTexture) {
-        mediaPlayer = MediaPlayer()
-        mediaPlayer.setSurface(Surface(surface))
-        mediaPlayer.setDataSource(requireContext(), videoUri)
-        mediaPlayer.prepare()
-        mediaPlayer.start()
-        mediaPlayer.setOnCompletionListener { mp ->
-            // 동영상 재생이 끝나면 필요한 작업 수행
-            mp.release()
-            homeTextureView.visibility = View.GONE
+    private fun setData() {
+        val mul = 80f
+        val min = 20f
+        val cnt = 5
+
+        val entries1 = ArrayList<RadarEntry>()
+        val entries2 = ArrayList<RadarEntry>()
+
+        for (i in 0 until cnt) {
+            val val1 = (Math.random() * mul + min).toFloat()
+            entries1.add(RadarEntry(val1))
+
+            val val2 = (Math.random() * mul + min).toFloat()
+            entries2.add(RadarEntry(val2))
         }
+
+        val set1 = RadarDataSet(entries1, "저난주")
+        set1.color = Color.rgb(103, 110, 129)
+        set1.fillColor = Color.rgb(103, 110, 129)
+        set1.setDrawFilled(true)
+        set1.fillAlpha = 180
+        set1.lineWidth = 2f
+        set1.isDrawHighlightCircleEnabled = true
+        set1.setDrawHighlightIndicators(false)
+
+        val set2 = RadarDataSet(entries2, "이번주")
+        set2.color = Color.rgb(121, 162, 175)
+        set2.fillColor = Color.rgb(121, 162, 175)
+        set2.setDrawFilled(true)
+        set2.fillAlpha = 180
+        set2.lineWidth = 2f
+        set2.isDrawHighlightCircleEnabled = true
+        set2.setDrawHighlightIndicators(false)
+
+        val sets = ArrayList<IRadarDataSet>()
+        sets.add(set1)
+        sets.add(set2)
+
+        val data = RadarData(sets)
+//        data.setValueTypeface(tfLight)
+        data.setValueTextSize(8f)
+        data.setDrawValues(false)
+        data.setValueTextColor(Color.WHITE)
+
+        radarChart.data = data
+        radarChart.invalidate()
     }
 
 

@@ -1,20 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
     tools:context=".step.Step0Activity">
 
+    <LinearLayout
+        android:layout_width="600dp"
+        android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/nextBtn0"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="다음 단계"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                tools:context=".MainActivity">
+                <com.daimajia.androidviewhover.BlurLayout
+                    android:id="@+id/blur_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/source"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/logo"
+                        android:layout_width="match_parent"
+                        android:layout_height="325dp" />
+                </com.daimajia.androidviewhover.BlurLayout>
+                <com.daimajia.androidviewhover.BlurLayout
+                    android:id="@+id/blur_layout2"
+                    android:layout_below="@+id/blur_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_height="wrap_content">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                    <ImageView
+                        android:id="@+id/source2"
+                        android:layout_width="match_parent"
+                        android:layout_height="325dp"
+                        android:layout_below="@+id/source"
+                        android:layout_centerInParent="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/mainlogo" />
+                </com.daimajia.androidviewhover.BlurLayout>
+
+                <com.daimajia.androidviewhover.BlurLayout
+                    android:id="@+id/blur_layout3"
+                    android:layout_below="@+id/blur_layout2"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/source3"
+                        android:layout_width="match_parent"
+                        android:layout_height="325dp"
+                        android:layout_below="@+id/source"
+                        android:layout_centerInParent="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/mainlogo" />
+                </com.daimajia.androidviewhover.BlurLayout>
+
+                <com.daimajia.androidviewhover.BlurLayout
+                    android:id="@+id/blur_layout4"
+                    android:layout_below="@+id/blur_layout3"
+                    android:layout_width="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/source4"
+                        android:layout_width="match_parent"
+                        android:layout_height="340dp"
+                        android:layout_below="@+id/source"
+                        android:layout_centerInParent="true"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/mainlogo" />
+                </com.daimajia.androidviewhover.BlurLayout>
+            </RelativeLayout>
+
+
+        </ScrollView>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp"
+        android:background="@android:color/darker_gray" />
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/nextBtn0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="다음 단계"
+            android:layout_gravity="bottom|center_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     tools:context=".fragment.mainFragment.MainCalendarFragment">
 
@@ -24,6 +25,44 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@android:color/darker_gray" />
+
+        <com.transferwise.sequencelayout.SequenceLayout
+            android:layout_margin="10dp"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="match_parent">
+
+            <com.transferwise.sequencelayout.SequenceStep
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:anchor="하루 전"
+                app:title="First step"/>
+
+            <com.transferwise.sequencelayout.SequenceStep
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="Second step"/>
+
+            <com.transferwise.sequencelayout.SequenceStep
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:active="true"
+                app:anchor="오늘"
+                app:subtitle="Subtitle of this step."
+                app:title="Third step"
+                app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+            <com.transferwise.sequencelayout.SequenceStep
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="Fourth step"/>
+
+            <com.transferwise.sequencelayout.SequenceStep
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:anchor="2 Dec"
+                app:title="Fifth step"/>
+        </com.transferwise.sequencelayout.SequenceLayout>
 
 
 

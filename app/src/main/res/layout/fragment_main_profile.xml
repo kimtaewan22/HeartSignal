@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.mainFragment.MainProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="프로필"/>
 
-</FrameLayout>
+    <com.thoughtbot.stencil.StencilView
+        android:id="@+id/stencil_sample"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:sv_strokeColor="@android:color/darker_gray"
+        app:sv_text="regular"
+        app:sv_textSize="24sp"
+        app:sv_strokeWidth="10" />
+
+    <com.thoughtbot.stencil.StencilView
+        android:id="@+id/stencil_sample_with_custom_font"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:sv_strokeColor="@android:color/darker_gray"
+        app:sv_text="custom font"
+        app:sv_textSize="24sp"
+        app:sv_strokeWidth="10" />
+
+</LinearLayout>
