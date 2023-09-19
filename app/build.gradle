@@ -178,4 +178,16 @@ dependencies {
     //circle imageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    //william Charts
+    implementation 'com.diogobernardino:williamchart:3.11.0'
+
+    // Tooltips
+    implementation 'com.diogobernardino.williamchart:tooltip-slider:3.11.0'
+    implementation 'com.diogobernardino.williamchart:tooltip-points:3.11.0'
+
+    // AnyChart
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.5'
+
+//        compile 'com.github.bmarrdev:android-DecoView-charting:v1.2'
+
 }

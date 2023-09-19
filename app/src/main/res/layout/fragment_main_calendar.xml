@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 app:active="true"
                 app:anchor="오늘"
-                app:subtitle="Subtitle of this step."
+                app:subtitle="Challenge 모드 성공 \n점수"
                 app:title="Third step"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Title"/>
 
@@ -62,6 +62,9 @@
                 android:layout_height="wrap_content"
                 app:anchor="2 Dec"
                 app:title="Fifth step"/>
+            <com.transferwise.sequencelayout.SequenceStep
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </com.transferwise.sequencelayout.SequenceLayout>
 
 

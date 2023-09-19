@@ -15,8 +15,9 @@
         android:layout_weight="1">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="5"
             android:layout_gravity="center"
             android:orientation="horizontal">
 
@@ -42,7 +43,36 @@
                 android:textColor="@color/bottom_sheet_background"
                 android:textSize="26sp"
                 android:textStyle="bold"/>
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+
+                <com.anychart.AnyChartView
+                    android:id="@+id/any_chart_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:progress="0"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
@@ -78,7 +108,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="10dp"
-                    android:background="@color/background_color"
+                    app:cardBackgroundColor="@color/background_color"
                     android:layout_margin="10dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -89,7 +119,7 @@
                             android:id="@+id/textView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="50/100"
+                            android:text="Platinum"
                             android:textColor="@color/successColor"
                             android:textSize="30sp"
                             android:textStyle="bold"
@@ -102,7 +132,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="종합 점수"
+                            android:text="종합 티어"
                             android:textColor="@color/gr_balck"
                             android:textSize="25sp"
                             android:textStyle="bold"
@@ -151,6 +181,48 @@
 <!--                android:progressBackgroundTint="#FFFFFF"-->
 <!--                android:progressDrawable="@drawable/circle_progressbar"-->
 <!--                android:progressTint="#3F9BC5" />-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="일일 활동 그래프"
+                        android:layout_marginLeft="10dp"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:textSize="22sp"
+                        />
+                    <TextView
+                        android:id="@+id/lineChartValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:fontFamily="@font/open_sans_bold"
+                        android:textSize="22sp"
+                        android:layout_marginLeft="80dp"
+                        android:layout_gravity="right"
+                        />
+                </LinearLayout>
+
+                <com.db.williamchart.view.LineChartView
+                    android:id="@+id/lineChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="30dp"
+                    app:chart_axis="none"
+                    app:chart_gridEffect="dotted"
+                    app:chart_labelsColor="#FF70977F"
+                    app:chart_labelsSize="10sp"
+                    app:chart_lineColor="#ffffff"
+                    app:chart_lineThickness="3dp"
+                    app:chart_smoothLine="true" />
+
+            </LinearLayout>
 
 
 

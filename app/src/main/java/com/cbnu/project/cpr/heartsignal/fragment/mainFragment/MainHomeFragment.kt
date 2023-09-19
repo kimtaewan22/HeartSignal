@@ -1,16 +1,22 @@
 package com.cbnu.project.cpr.heartsignal.fragment.mainFragment
 
 
-import android.animation.ValueAnimator
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import androidx.fragment.app.Fragment
-import com.cbnu.project.cpr.heartsignal.R
+import com.anychart.AnyChart
+import com.anychart.AnyChartView
+import com.anychart.chart.common.dataentry.SingleValueDataSet
+import com.anychart.charts.CircularGauge
+import com.anychart.graphics.vector.SolidFill
+import com.anychart.graphics.vector.text.HAlign
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentMainHomeBinding
+import com.db.williamchart.slidertooltip.SliderTooltip
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.components.Legend
@@ -20,6 +26,8 @@ import com.github.mikephil.charting.data.RadarEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet
 import com.marvel999.acr.ArcProgress
+import com.anychart.enums.Anchor;
+
 
 class MainHomeFragment : Fragment() {
 
@@ -27,6 +35,7 @@ class MainHomeFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var radarChart: RadarChart
     private lateinit var progress: ProgressBar
+    private val fillColor = Color.argb(150, 51, 181, 229)
 
 
     override fun onCreateView(
@@ -39,15 +48,33 @@ class MainHomeFragment : Fragment() {
         radarChart = binding.homeRadarChart
         radarChart.setBackgroundColor(Color.rgb(60, 65, 82))
         radarChart.description.isEnabled = false
+        val linechart = binding.lineChart
 
+        linechart.gradientFillColors =
+            intArrayOf(
+                Color.parseColor("#81FFFFFF"),
+                Color.TRANSPARENT
+            )
+        linechart.animation.duration = animationDuration
+        linechart.tooltip =
+            SliderTooltip().also {
+                it.color = Color.WHITE
+            }
+        linechart.onDataPointTouchListener = { index, _, _ ->
+            binding.lineChartValue.text =
+                lineSet.toList()[index]
+                    .second
+                    .toString()
+        }
+        binding.lineChart.animate(lineSet)
         // Initialize and set up the chart
         initializeRadarChart()
-        setData()
+        setRadarData()
 
         radarChart.animateXY(1400, 1400, Easing.EaseInOutQuad)
 
         setUpArcProgress()
-
+        setUpVectorCircular()
 
         return view
     }
@@ -90,13 +117,16 @@ class MainHomeFragment : Fragment() {
 
 
         val xAxis = radarChart.xAxis
-        xAxis.textSize = 12f
+        xAxis.textSize = 16f
         xAxis.yOffset = 0f
         xAxis.xOffset = 0f
-        val labels = arrayOf("압박 강도", "음성 인식", "압박 횟수", "시간", "정확도")
+        val labels = arrayOf("A+\n압박 강도", "음성 인식", "압박 횟수", "시간", "정확도")
+
 
         xAxis.setValueFormatter(object : IndexAxisValueFormatter(labels){})
         xAxis.textColor = Color.WHITE
+        xAxis.typeface = Typeface.DEFAULT_BOLD
+        xAxis.setCenterAxisLabels(false)
 
         val yAxis = radarChart.yAxis
 //        yAxis.typeface = tfLight
@@ -117,7 +147,9 @@ class MainHomeFragment : Fragment() {
         l.textColor = Color.WHITE
     }
 
-    private fun setData() {
+
+
+    private fun setRadarData() {
         val mul = 80f
         val min = 20f
         val cnt = 5
@@ -157,7 +189,7 @@ class MainHomeFragment : Fragment() {
 
         val data = RadarData(sets)
 //        data.setValueTypeface(tfLight)
-        data.setValueTextSize(8f)
+        data.setValueTextSize(12f)
         data.setDrawValues(false)
         data.setValueTextColor(Color.WHITE)
 
@@ -166,4 +198,116 @@ class MainHomeFragment : Fragment() {
     }
 
 
+    companion object {
+        private val lineSet = listOf(
+            "label1" to 5f,
+            "label2" to 4.5f,
+            "label3" to 4.7f,
+            "label4" to 3.5f,
+            "label5" to 3.6f,
+            "label6" to 7.5f,
+            "label7" to 7.5f,
+            "label8" to 10f,
+            "label9" to 5f,
+            "label10" to 6.5f,
+            "label11" to 3f,
+            "label12" to 4f
+        )
+
+        private val barSet = listOf(
+            "JAN" to 4F,
+            "FEB" to 7F,
+            "MAR" to 2F,
+            "MAY" to 2.3F,
+            "APR" to 5F,
+            "JUN" to 4F
+        )
+
+        private val horizontalBarSet = listOf(
+            "PORRO" to 5F,
+            "FUSCE" to 6.4F,
+            "EGET" to 3F
+        )
+
+        private val donutSet = listOf(
+            20f,
+            80f,
+            100f
+        )
+
+        private const val animationDuration = 1000L
+    }
+
+
+    private fun setUpVectorCircular() {
+        val anyChartView: AnyChartView = binding.anyChartView
+        anyChartView.setProgressBar(binding.progressBar)
+
+        val circularGauge: CircularGauge = AnyChart.circular()
+        circularGauge.animation(true, 3000)
+        circularGauge.fill("#fff")
+            .stroke("null")
+            .padding(0, 0, 0, 0)
+            .margin(30, 30, 30, 30)
+            .startAngle(0)
+            .sweepAngle(360)
+
+        circularGauge.data(SingleValueDataSet(arrayOf<Double>(18.1)))
+
+        circularGauge.axis(0)
+            .startAngle(0)
+            .radius(80)
+            .sweepAngle(360)
+            .width(3)
+            .drawFirstLabel(false)
+            .ticks("{ type: 'line', length: 4, position: 'outside' }")
+
+        circularGauge.axis(0).labels()
+            .position("outside")
+            .useHtml(true)
+        circularGauge.axis(0).labels().format(
+            """function () {
+    return this.value + '&deg;'
+  }"""
+        )
+
+        circularGauge.axis(0).scale()
+            .minimum(0)
+            .maximum(360)
+        circularGauge.axis(0).scale()
+            .ticks("{interval: 45}")
+            .minorTicks("{interval: 10}")
+
+
+        circularGauge.marker(0)
+            .fill(SolidFill("#64b5f6", 1))
+            .stroke("null")
+        circularGauge.marker(0)
+            .size(7)
+            .radius(80)
+
+
+        circularGauge.label(0)
+            .text("<span style=\"font-size: 25\"></span>")
+            .useHtml(true)
+            .hAlign(HAlign.CENTER)
+        circularGauge.label(0)
+            .anchor(Anchor.CENTER_TOP)
+            .offsetY(50)
+            .padding(15, 20, 0, 0)
+
+        circularGauge.label(1)
+            .text("<span style=\"font-size: 20\">18.1</span>")
+            .useHtml(true)
+            .hAlign(HAlign.CENTER)
+        circularGauge.label(1)
+            .anchor(Anchor.CENTER_TOP)
+            .offsetY(-20)
+            .padding(5, 10, 0, 0)
+            .background("{fill: 'none', stroke: '#c1c1c1', corners: 3, cornerType: 'ROUND'}")
+
+        anyChartView.setChart(circularGauge)
+    }
+
 }
+
