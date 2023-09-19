@@ -16,6 +16,8 @@
         app:border_color="#ffffff"
         app:mutate_background="true"
         app:oval="true" />
+
+
     <TextView
         android:id="@+id/description"
         android:text="I'm Daimajia."

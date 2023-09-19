@@ -12,21 +12,17 @@
         android:layout_height="match_parent">
         <ImageView
             android:layout_marginRight="20dp"
-            android:id="@+id/heart"
-            android:src="@drawable/ic_cpr"
-            android:layout_width="25dp"
-            android:layout_height="25dp" />
+            android:id="@+id/mode_single1"
+            android:src="@drawable/ic_single1"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
         <ImageView
-            android:id="@+id/share"
-            android:layout_marginRight="20dp"
-            android:src="@drawable/ic_cpr"
-            android:layout_width="25dp"
-            android:layout_height="25dp"/>
-        <ImageView
-            android:id="@+id/more"
-            android:src="@drawable/ic_cpr"
-            android:layout_width="25dp"
-            android:layout_height="25dp"/>
+            android:id="@+id/mode_single2"
+            android:layout_marginLeft="40dp"
+            android:src="@drawable/ic_single2"
+            android:layout_width="100dp"
+            android:layout_height="100dp"/>
+
     </LinearLayout>
     <TextView
         android:id="@+id/description"
