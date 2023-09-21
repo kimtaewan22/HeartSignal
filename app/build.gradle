@@ -203,5 +203,10 @@ dependencies {
 //    implementation 'io.github.shashank02051997:FancyToast:2.0.2'
     implementation "com.github.lisawray.groupie:groupie:2.10.1"
 
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.5.0'
+
+    // fading text
+    implementation 'com.github.rosenpin:fading-text-view:3.0'
 
 }

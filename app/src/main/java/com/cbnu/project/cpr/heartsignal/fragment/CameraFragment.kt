@@ -47,7 +47,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
-import com.cbnu.project.cpr.heartsignal.MainViewModel
+import com.cbnu.project.cpr.heartsignal.viewModel.MainViewModel
 import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.adapter.ChartDataRecyclerViewAdapter

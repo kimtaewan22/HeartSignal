@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/mainHomeFragment">
+
+    <fragment
+        android:id="@+id/badgeShowFragment"
+        android:name="com.cbnu.project.cpr.heartsignal.fragment.BadgeShowFragment"
+        android:label="fragment_badge_show"
+        tools:layout="@layout/fragment_badge_show" >
+        <action
+            android:id="@+id/action_badgeShowFragment_to_mainHomeFragment"
+            app:destination="@id/mainHomeFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/mainHomeFragment"
+        android:name="com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainHomeFragment"
+        android:label="fragment_main_home"
+        tools:layout="@layout/fragment_main_home" >
+        <action
+            android:id="@+id/action_mainHomeFragment_to_badgeShowFragment"
+            app:destination="@id/badgeShowFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out"/>
+        <action
+            android:id="@+id/action_mainHomeFragment_to_mainCalendarFragment"
+            app:destination="@id/mainCalendarFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out"/>
+        <action
+            android:id="@+id/action_mainHomeFragment_to_mainProfileFragment"
+            app:destination="@id/mainProfileFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/mainCalendarFragment"
+        android:name="com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainCalendarFragment"
+        android:label="fragment_main_calendar"
+        tools:layout="@layout/fragment_main_calendar" >
+        <action
+            android:id="@+id/action_mainCalendarFragment_to_mainHomeFragment"
+            app:destination="@id/mainHomeFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/mainProfileFragment"
+        android:name="com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainProfileFragment"
+        android:label="fragment_main_profile"
+        tools:layout="@layout/fragment_main_profile" >
+        <action
+            android:id="@+id/action_mainProfileFragment_to_mainHomeFragment"
+            app:destination="@id/mainHomeFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:animator/fade_in"
+            app:popExitAnim="@android:animator/fade_out"/>
+    </fragment>
+</navigation>

@@ -81,4 +81,9 @@
     </string-array>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="fading_text">
+        <item>Heart Signal </item>
+        <item>Welcome To </item>
+    </string-array>
 </resources>

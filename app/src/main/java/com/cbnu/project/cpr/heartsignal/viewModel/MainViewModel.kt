@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cbnu.project.cpr.heartsignal
+package com.cbnu.project.cpr.heartsignal.viewModel
 
 import androidx.lifecycle.ViewModel
+import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
 
 /**
  *  This ViewModel is used to store pose landmarker helper settings

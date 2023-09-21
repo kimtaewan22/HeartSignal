@@ -31,7 +31,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.cbnu.project.cpr.heartsignal.MainViewModel
+import com.cbnu.project.cpr.heartsignal.viewModel.MainViewModel
 import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentGalleryBinding
 import com.google.mediapipe.tasks.vision.core.RunningMode

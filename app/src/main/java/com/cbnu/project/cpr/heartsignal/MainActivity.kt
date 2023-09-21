@@ -6,8 +6,10 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.view.View
 import android.widget.Toast
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.cbnu.project.cpr.heartsignal.ble.BluetoothSearchActivity
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityMainBinding
 import com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainCalendarFragment
@@ -23,7 +25,8 @@ class MainActivity : AppCompatActivity(){
     private lateinit var mainHomeFragment: MainHomeFragment
     private lateinit var mainCalendarFragment: MainCalendarFragment
     private lateinit var mainProfileFragment: MainProfileFragment
-
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +34,12 @@ class MainActivity : AppCompatActivity(){
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(binding.root)
 
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.mainFragmentContainer) as NavHostFragment
+        navController = navHostFragment.findNavController()
+
         mainHomeFragment = MainHomeFragment()
         mainCalendarFragment = MainCalendarFragment()
         mainProfileFragment = MainProfileFragment()
-        supportFragmentManager.beginTransaction().replace(R.id.mainFragmentContainer,mainHomeFragment).commit()
 
         setUpRailNavigation()
         setUpCircleMenu()
@@ -46,40 +51,37 @@ class MainActivity : AppCompatActivity(){
             .addSubMenu(Color.parseColor("#258CFF"), R.drawable.ic_bluetooth)
             .addSubMenu(Color.parseColor("#30A400"), R.drawable.ic_cpr)
             .addSubMenu(Color.parseColor("#FF4B32"), R.drawable.ic_ranking)
-            .setOnMenuSelectedListener(object : OnMenuSelectedListener {
-                override fun onMenuSelected(index: Int) {
-                    // 여기에 원하는 동작을 추가하세요
-                    when(index)
-                    {
-                        0 -> {
-                            val handler = Handler()
-                            handler.postDelayed({
-                                startActivity(
-                                    Intent(
-                                        this@MainActivity,
-                                        BluetoothSearchActivity::class.java
-                                    )
+            .setOnMenuSelectedListener { index -> // 여기에 원하는 동작을 추가하세요
+                when (index) {
+                    0 -> {
+                        val handler = Handler()
+                        handler.postDelayed({
+                            startActivity(
+                                Intent(
+                                    this@MainActivity,
+                                    BluetoothSearchActivity::class.java
                                 )
-                            }, 1100)
-                        }
-                        1 -> {
-                            val handler = Handler()
-                            handler.postDelayed({
-                                startActivity(
-                                    Intent(
-                                        this@MainActivity,
-                                        Step0Activity::class.java
-                                    )
-                                )
-                            }, 1100)
-                        }
-                        2 -> {
-                            Toasty.success(this@MainActivity, "랭킹", Toast.LENGTH_SHORT, true).show();
-                        }
+                            )
+                        }, 1100)
                     }
 
+                    1 -> {
+                        val handler = Handler()
+                        handler.postDelayed({
+                            startActivity(
+                                Intent(
+                                    this@MainActivity,
+                                    Step0Activity::class.java
+                                )
+                            )
+                        }, 1100)
+                    }
+
+                    2 -> {
+                        Toasty.success(this@MainActivity, "랭킹", Toast.LENGTH_SHORT, true).show();
+                    }
                 }
-            })
+            }
             .setOnMenuStatusChangeListener(object : OnMenuStatusChangeListener {
                 override fun onMenuOpened() {
                     // 메뉴가 열렸을 때의 동작을 추가하세요
