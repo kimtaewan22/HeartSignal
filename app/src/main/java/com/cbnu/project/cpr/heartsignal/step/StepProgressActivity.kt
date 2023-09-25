@@ -1,17 +1,14 @@
 package com.cbnu.project.cpr.heartsignal.step
 
-import android.app.FragmentTransaction
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityStepProgressBinding
 import com.kofigyan.stateprogressbar.StateProgressBar
-import com.kofigyan.stateprogressbar.components.StateItem
 
 class StepProgressActivity : AppCompatActivity() {
     private lateinit var binding : ActivityStepProgressBinding

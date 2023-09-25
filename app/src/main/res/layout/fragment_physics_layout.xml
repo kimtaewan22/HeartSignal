@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="top|center"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="46sp"
+        android:text="Score"
+        android:alpha="0.5"
+        android:textColor="#CCCCCC"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/score"
+        android:layout_marginTop="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:text="0"
+        android:alpha="0.5"
+        android:textColor="#CCCCCC"
+        android:layout_gravity="center" />
+
+
+    <com.jawnnypoo.physicslayout.PhysicsLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/physicsLayout"
+        app:physics="true"
+        app:gravityX="0.0"
+        app:gravityY="12.8"
+        app:bounds="true"
+        app:boundsSize="100dp"
+        tools:context=".fragment.PhysicsLayoutFragment">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|center"
+            android:src="@drawable/ic_badge_09_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|center"
+            android:src="@drawable/ic_badge_10_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left"
+            android:src="@drawable/ic_badge_01_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_badge_02_on"
+            app:layout_shape="circle" />
+
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|center"
+            android:src="@drawable/ic_badge_11_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:id="@+id/ic_badge_12_on"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|center"
+            android:src="@drawable/ic_badge_12_on"
+            app:layout_shape="circle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/collisionBlock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|top"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/cardview_dark_background"
+            app:layout_shape="circle"
+            app:layout_circleRadius="20dp"
+            app:layout_bodyType="statik"
+            app:layout_fixedRotation="true"
+            app:layout_friction="0.8"
+            app:layout_restitution="0.3"
+            app:layout_density="0.5"
+            android:background="@color/cardview_light_background"
+            android:text="Block"/>
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left"
+            android:src="@drawable/ic_badge_05_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="right"
+            android:src="@drawable/ic_badge_06_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|bottom"
+            android:src="@drawable/ic_badge_07_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="right|bottom"
+            android:src="@drawable/ic_badge_08_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center|left"
+            android:src="@drawable/ic_badge_03_on"
+            app:layout_shape="circle" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="left|right"
+            android:src="@drawable/ic_badge_04_on"
+            app:layout_bodyType="kinematic"
+            app:layout_friction="0.8"
+            app:layout_restitution="0.3"
+            app:layout_shape="circle" />
+
+
+
+
+    </com.jawnnypoo.physicslayout.PhysicsLinearLayout>
+
+
+</FrameLayout>
+

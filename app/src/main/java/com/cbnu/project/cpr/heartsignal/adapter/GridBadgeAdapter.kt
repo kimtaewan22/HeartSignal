@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.TextView
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.viewModel.BadgeModel
 
@@ -23,7 +24,9 @@ class GridBadgeAdapter(context: Context, courseModelArrayList: ArrayList<BadgeMo
         val courseModel: BadgeModel? = getItem(position)
 
         val icon = listitemView?.findViewById<ImageView>(R.id.badge_icon)
+        val name = listitemView?.findViewById<TextView>(R.id.badge_title)
         icon?.setImageResource(courseModel!!.getImg())
+        name?.text = courseModel!!.getBadgeTitle()
         return listitemView!!
     }
 }

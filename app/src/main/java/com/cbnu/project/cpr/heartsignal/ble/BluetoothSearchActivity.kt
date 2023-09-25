@@ -57,7 +57,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
                 ) {
                     return
                 }
-//                Log.d(TAG, "Scanned Device: ${device?.name} - $address - ${device.uuids}")
+                Log.d(TAG, "Scanned Device: ${device?.name} - $address - ${device.uuids}")
 
             }
         }
