@@ -2,7 +2,7 @@
 
 ### Overview
 
-This is a CPR Training app
+This is a CPR Training program
 
 ## Build the demo using Android Studio
 
@@ -19,16 +19,32 @@ This is a CPR Training app
 *   Open Android Studio. From the Welcome screen, select Open an existing
     Android Studio project.
 
-*   From the Open File or Project window that appears, navigate to and select
-    the mediapipe/examples/pose_landmarker/android directory. Click OK. You may
-    be asked if you trust the project. Select Trust.
-
-*   If it asks you to do a Gradle Sync, click OK.
-
 *   With your Android device connected to your computer and developer mode
     enabled, click on the green Run arrow in Android Studio.
 
 ### Models used
 
-Downloading, extraction, and placing the models into the *assets* folder is
-managed automatically by the **download.gradle** file.
+**you need three models**
+
+> 1. pose_landmaker_full
+> 2. pose_landmaker_heavy
+> 3. pose_landmaker_lite
+
+---
+### Stack
+> 1. Kotlin
+> 2. C++
+> 3. python(with pytorch)
+> 4. firebase
+> 5. Arduino
+
+### Scenario
+
+**We have created a CPR emergency training scenario composed of three stages**
+
+1. Speech Recognition
+2. Chest Compressions(with The correct angle of the arm) 
+3. small quize
+
+
+
