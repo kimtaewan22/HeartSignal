@@ -6,7 +6,6 @@ import android.content.Intent
 import android.media.MediaPlayer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.speech.RecognitionListener
@@ -17,7 +16,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.R
-import com.cbnu.project.cpr.heartsignal.custom.CustomProgressDialog
 import com.cbnu.project.cpr.heartsignal.custom.RecordBottomSheetDialog
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityStep1Binding
 
@@ -25,8 +23,6 @@ class Step1Activity : AppCompatActivity() {
     private lateinit var binding: ActivityStep1Binding
     private val REQUEST_SPEECH_RECOGNITION = 1001
     private lateinit var speechRecognizer: SpeechRecognizer
-//    private var customProgressDialog: CustomProgressDialog? = null
-//    private var countdownTimer: CountDownTimer? = null
     private var mediaPlayerEx: MediaPlayer? = null
     private var mediaPlayerSuc: MediaPlayer? = null
     private var mediaPlayerEnd: MediaPlayer? = null
@@ -274,37 +270,12 @@ class Step1Activity : AppCompatActivity() {
         }
     }
 
-
-//    private fun showResultInDialog() {
-//        if(customProgressDialog == null) {
-//            customProgressDialog = CustomProgressDialog()
-//        }
-//
-//        countdownTimer = object : CountDownTimer(10000, 100) {
-//            override fun onTick(millisUntilFinished: Long) {
-//                val progress = ((10000 - millisUntilFinished) / 100).toInt()
-//                customProgressDialog?.updateProgress(progress)
-//                customProgressDialog?.setUpTextView("잠시후 STEP2가 시작됩니다")
-//            }
-//
-//            override fun onFinish() {
-//                // Set the value to false after 10 seconds
-//                customProgressDialog?.dismiss()
-//            }
-//        }
-//        countdownTimer?.start()
-//
-//        val fragmentManager = supportFragmentManager
-//        customProgressDialog?.show(fragmentManager, "CustomProgressDialog")
-//    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_SPEECH_RECOGNITION && resultCode == Activity.RESULT_OK) {
             val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
             if (results != null && results.isNotEmpty()) {
                 val recognizedText = results[0]
-//                showResultInDialog(recognizedText)
             }
         }
     }

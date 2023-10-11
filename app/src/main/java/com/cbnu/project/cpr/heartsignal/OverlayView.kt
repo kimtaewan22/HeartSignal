@@ -18,17 +18,13 @@ package com.cbnu.project.cpr.heartsignal
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.CornerPathEffect
-import android.graphics.DashPathEffect
 import android.graphics.DiscretePathEffect
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.mediapipe.tasks.vision.core.RunningMode
-import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarker
 import com.google.mediapipe.tasks.vision.poselandmarker.PoseLandmarkerResult
 import kotlin.math.max
 import kotlin.math.min

@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.os.Handler
 import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.auth.AuthLoginActivity
-import com.cbnu.project.cpr.heartsignal.ble.BluetoothSearchActivity
 import com.cbnu.project.cpr.heartsignal.databinding.ActivitySplashBinding
 import com.thoughtbot.stencil.StencilView
 

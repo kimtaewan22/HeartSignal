@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.custom.VectorDrawableTagItem
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentMainHomeBinding
@@ -105,36 +104,6 @@ class MainHomeFragment : Fragment() {
         arc_img.setProgressWithAnimation(progress)
     }
 
-//    private fun setUpRotatingText() {
-//        rotatingTextWrapper = binding.customSwitcher
-//
-//        rotatingTextWrapper.size = 30
-//        rotatable = Rotatable(Color.parseColor("#FFA036"), 1500, "출석 달성도", "총 달성도", "미션 달성도")
-//        rotatable.size = 25f
-//        rotatable.isCenter = true
-//        rotatable.animationDuration = 500
-//
-//        rotatingTextWrapper.setContent("내 미션패스 > ?", rotatable)
-//    }
-
-
-//    private fun setUpProgress() {
-//        progress = binding.progressbar
-//        // 프로그레스바의 현재 값
-//        val currentProgress = progress.progress
-//        // 원하는 최종 프로그레스 값
-//        val targetProgress = 70
-//
-//        // ValueAnimator를 사용하여 애니메이션 생성
-//        val animator = ValueAnimator.ofInt(currentProgress, targetProgress)
-//        animator.duration = 1000 // 애니메이션 지속 시간 (밀리초)
-//
-//        animator.addUpdateListener { valueAnimator ->
-//            val animatedValue = valueAnimator.animatedValue as Int
-//            progress.progress = animatedValue // 프로그레스바 값 업데이트
-//        }
-//        animator.start() // 애니메이션 시작
-//    }
 
     private fun initializeRadarChart() {
         radarChart.webLineWidth = 1f

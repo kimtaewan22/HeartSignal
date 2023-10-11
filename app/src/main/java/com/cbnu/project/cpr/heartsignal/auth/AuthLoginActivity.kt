@@ -1,7 +1,6 @@
 package com.cbnu.project.cpr.heartsignal.auth
 
 import android.Manifest
-import android.R
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
