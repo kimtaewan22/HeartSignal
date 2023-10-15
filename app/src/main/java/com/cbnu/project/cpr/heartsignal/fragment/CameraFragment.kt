@@ -23,6 +23,7 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import kotlinx.coroutines.*
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -51,6 +52,7 @@ import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.cbnu.project.cpr.heartsignal.manager.chartmanager.LineChartManager
 import com.cbnu.project.cpr.heartsignal.manager.soundmanager.AnimationManager
 import com.cbnu.project.cpr.heartsignal.manager.soundmanager.SoundManager
+import com.cbnu.project.cpr.heartsignal.step.Step0Activity
 import com.github.mikephil.charting.charts.HorizontalBarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.BarData
@@ -216,13 +218,14 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                             SoundManager.initialize(requireContext())
                             AnimationManager.updateData()
 
-
-                            CoroutineScope(Dispatchers.Main).launch {
-                                AnimationManager.showLottieCountDown(
-                                    lottie_count,
-                                    fragmentCameraBinding
-                                )
-                                val delayMillis = 500L // 0.5초마다 업데이트
+                            val handler = Handler()
+                            handler.postDelayed({
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    AnimationManager.showLottieCountDown(
+                                        lottie_count,
+                                        fragmentCameraBinding
+                                    )
+                                    val delayMillis = 500L // 0.5초마다 업데이트
                                     while (processingData) {
                                         // 타이머 소리 재생
                                         SoundManager.playBeepSound()
@@ -230,8 +233,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                                         AnimationManager.showLottieAnimation()
                                         // 지정된 시간만큼 대기
                                         delay(delayMillis)
+                                    }
                                 }
-                            }
+                            }, 5000)
                         }
                     }
                     else {

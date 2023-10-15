@@ -5,7 +5,6 @@ import android.view.View
 import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
-import com.cbnu.project.cpr.heartsignal.manager.chartmanager.LineChartManager
 import com.robinhood.ticker.TickerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,6 +28,7 @@ object AnimationManager {
     }
 
     fun showLottieAnimation() {
+        currentTime += 0.5f
         m_lottieAnimaionView?.repeatCount = 60
         m_lottieAnimaionView?.playAnimation()
         m_lottieAnimaionView?.addAnimatorListener(object : Animator.AnimatorListener {
@@ -117,7 +117,7 @@ object AnimationManager {
                 remainingTimeInSeconds-- // 1초씩 감소
             }
             isCountingDown = false  // 카운트 다운이 완료되면 플래그를 다시 false로 설정합니다.
-
+            currentTime = 0f
         }
     }
 
