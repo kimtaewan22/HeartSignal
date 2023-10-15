@@ -30,6 +30,8 @@
         android:supportsRtl="true"
         android:taskAffinity=""
         android:theme="@style/AppTheme"
+        android:networkSecurityConfig="@xml/network_security_config"
+
         tools:ignore="AllowBackup">
         <activity
             android:name=".SplashActivity"

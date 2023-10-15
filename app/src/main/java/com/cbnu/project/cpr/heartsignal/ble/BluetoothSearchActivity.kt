@@ -5,6 +5,7 @@ import android.Manifest
 import android.animation.Animator
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.content.pm.PackageManager
@@ -38,6 +39,8 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
 
     private lateinit var bluetoothManager: BluetoothManager
+    private var scanner: BluetoothLeScanner? = null
+
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -112,7 +115,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
                 } else {
                     // 버튼이 꺼질 때 실행할 작업
                     hideLottieAnimation()
-                    val scanner = adapter.bluetoothLeScanner
+                    scanner = adapter.bluetoothLeScanner
                     scanning = false
                     if (ActivityCompat.checkSelfPermission(
                             this@BluetoothSearchActivity,
@@ -121,7 +124,7 @@ class BluetoothSearchActivity : AppCompatActivity() {
                     ) {
                         return
                     }
-                    scanner.stopScan(scanCallback)
+                    scanner?.stopScan(scanCallback)
                 }
             }
         })
@@ -203,8 +206,30 @@ class BluetoothSearchActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "BluetoothSearchActivity"
-        private const val SCAN_PERIOD = 2 * 60 * 1000L // 2 minutes
+        private const val SCAN_PERIOD = 2 * 10 * 1000L // 2 minutes
     }
+    override fun onDestroy() {
+        super.onDestroy()
+        hideLottieAnimation()
 
+        // 액티비티가 종료될 때 스캔을 중지
+        scanning = false
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        scanner?.stopScan(scanCallback)
+
+    }
 }
 

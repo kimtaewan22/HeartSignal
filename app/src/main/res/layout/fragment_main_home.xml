@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="#3C4152"
+    android:background="@color/main_background"
     tools:context=".fragment.mainFragment.MainHomeFragment">
 
 
@@ -226,7 +226,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardElevation="4dp"
-                    app:cardBackgroundColor="@color/background_color"
+                    app:cardBackgroundColor="@color/main_background"
                     app:cardUseCompatPadding="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -281,7 +281,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:cardCornerRadius="10dp"
-                    app:cardBackgroundColor="@color/background_color"
+                    app:cardBackgroundColor="@color/main_background"
                     android:layout_margin="10dp">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -294,7 +294,7 @@
                             android:layout_height="wrap_content"
                             android:text="Platinum"
                             android:textColor="@color/successColor"
-                            android:textSize="30sp"
+                            android:textSize="28sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@+id/arc_img"
                             app:layout_constraintEnd_toEndOf="@+id/arc_img"
@@ -306,7 +306,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="종합 티어"
-                            android:textColor="@color/gr_balck"
+                            android:textColor="@android:color/white"
                             android:textSize="25sp"
                             android:textStyle="bold"
                             app:layout_constraintBottom_toBottomOf="@+id/arc_img"
@@ -316,11 +316,11 @@
 
                         <com.marvel999.acr.ArcProgress
                             android:id="@+id/arc_img"
-                            android:layout_width="250dp"
+                            android:layout_width="215dp"
                             android:layout_height="250dp"
                             android:layout_margin="10dp"
                             app:ap_background_progressbar_width="50"
-                            app:ap_foreground_progressbar_width="80"
+                            app:ap_foreground_progressbar_width="70"
                             app:ap_progress_roundedCorner="true"
                             app:ap_progress="0"
                             app:ap_progress_background_color="@color/card_background_border_color"
@@ -332,6 +332,43 @@
                             app:layout_constraintTop_toTopOf="parent" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardBackgroundColor="@color/main_background">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:trackColor="@color/blue_grey_400"
+                            app:trackThickness="3dp"
+                            android:progress="70"
+                            app:indicatorSize="130dp"
+                            app:trackCornerRadius="20dp" />
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:lottie_rawRes="@raw/anim_ble"
+                            app:lottie_autoPlay="true"
+                            app:lottie_repeatCount="1000"
+                            />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
                 </androidx.cardview.widget.CardView>
 
 
@@ -369,6 +406,7 @@
                         android:layout_marginLeft="10dp"
                         android:fontFamily="@font/open_sans_bold"
                         android:textSize="22sp"
+                        android:textColor="@android:color/white"
                         />
                     <TextView
                         android:id="@+id/lineChartValue"
@@ -414,6 +452,7 @@
             android:layout_weight="3">
 
             <com.github.mikephil.charting.charts.RadarChart
+                android:backgroundTint="@color/main_background"
                 android:layout_gravity="center"
                 android:id="@+id/home_radar_chart"
                 android:layout_width="match_parent"

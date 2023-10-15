@@ -18,17 +18,19 @@
         app:menu="@menu/menu_navigation_rail" />
 
     <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mainFragmentContainer"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/mainFragmentContainer"
         android:layout_marginStart="70dp"
-        android:name="androidx.navigation.fragment.NavHostFragment"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_main"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/navigation_rail"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:navGraph="@navigation/nav_main" />
 
     <com.hitomi.cmlibrary.CircleMenu
         android:id="@+id/circle_menu"
@@ -37,67 +39,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-
-<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--        android:id="@+id/fab_menu_actions"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="end"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        android:backgroundTint="@color/blue_grey_400"-->
-<!--        android:text="메뉴"-->
-<!--        app:icon="@drawable/ic_baseline_add_24"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent" />-->
-
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/fab_menu_bluetooth"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginBottom="24dp"-->
-<!--        android:backgroundTint="@color/blue_grey_400"-->
-<!--        android:contentDescription="Menu Alarm"-->
-<!--        android:visibility="gone"-->
-<!--        app:fabSize="normal"-->
-<!--        app:layout_constraintBottom_toTopOf="@+id/fab_menu_actions"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/fab_menu_actions"-->
-<!--        app:srcCompat="@drawable/ic_bluetooth" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/fab_menu_add_alarm_text"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="8dp"-->
-<!--        android:text="블루투스 연결"-->
-<!--        android:visibility="gone"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/fab_menu_bluetooth"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/fab_menu_bluetooth"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/fab_menu_bluetooth" />-->
-
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/fab_menu_cpr"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginBottom="24dp"-->
-<!--        android:backgroundTint="@color/blue_grey_400"-->
-<!--        android:contentDescription="Menu Person"-->
-<!--        android:visibility="gone"-->
-<!--        app:fabSize="normal"-->
-<!--        app:layout_constraintBottom_toTopOf="@+id/fab_menu_bluetooth"-->
-<!--        app:layout_constraintEnd_toEndOf="@+id/fab_menu_bluetooth"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/fab_menu_bluetooth"-->
-<!--        app:srcCompat="@drawable/ic_cpr" />-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/fab_menu_add_person_text"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="8dp"-->
-<!--        android:text="CPR 훈련"-->
-<!--        android:visibility="gone"-->
-<!--        app:layout_constraintBottom_toBottomOf="@+id/fab_menu_cpr"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/fab_menu_cpr"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/fab_menu_cpr" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

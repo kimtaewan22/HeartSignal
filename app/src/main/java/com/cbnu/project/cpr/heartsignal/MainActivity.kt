@@ -16,6 +16,7 @@ import com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainCalendarFragme
 import com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainHomeFragment
 import com.cbnu.project.cpr.heartsignal.fragment.mainFragment.MainProfileFragment
 import com.cbnu.project.cpr.heartsignal.step.Step0Activity
+import com.cbnu.project.cpr.heartsignal.step.Step2Activity
 import com.hitomi.cmlibrary.OnMenuStatusChangeListener
 import es.dmoral.toasty.Toasty
 
@@ -77,7 +78,13 @@ class MainActivity : AppCompatActivity(){
                     }
 
                     2 -> {
-                        Toasty.success(this@MainActivity, "랭킹", Toast.LENGTH_SHORT, true).show();
+                        val handler = Handler()
+                        Toasty.success(this@MainActivity, "테스트", Toast.LENGTH_SHORT, true).show();
+                        handler.postDelayed({
+                            startActivity(
+                                Intent(this@MainActivity, Step2Activity::class.java)
+                            )
+                        }, 1100)
                     }
                 }
             }

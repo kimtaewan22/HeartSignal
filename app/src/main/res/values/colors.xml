@@ -29,6 +29,7 @@
     <color name="icFocused">#DDFFFFFF</color>
     <color name="icPressed">#AAFFFFFF</color>
     <color name="blue_grey_400">#78909C</color>
+    <color name="main_background">#242526</color>
     <!-- Voice dialog -->
     <color name="subtitleBackground">#EEEEEE</color>
     <color name="subtitleTextColor">#7A7A7A</color>

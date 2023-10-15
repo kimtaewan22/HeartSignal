@@ -38,9 +38,9 @@ class AuthLoginActivity : AppCompatActivity() {
                 REQUEST_CODE_PERMISSIONS)
         }
 
-        binding.testBtn.setOnClickListener {
-            startActivity(Intent(this@AuthLoginActivity, Step2Activity::class.java))
-        }
+//        binding.testBtn.setOnClickListener {
+//            startActivity(Intent(this@AuthLoginActivity, Step2Activity::class.java))
+//        }
 
 //        binding.authLogin.setOnClickListener {
 //            val intent = Intent(this@AuthLoginActivity, MainActivity::class.java)
@@ -48,33 +48,34 @@ class AuthLoginActivity : AppCompatActivity() {
 //            startActivity(intent)
 //        }
 
-        transitionButton.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                // Start the loading animation when the user tap the button
-                transitionButton.startAnimation()
+        transitionButton.setOnClickListener {
+            // Start the loading animation when the user tap the button
+            transitionButton.startAnimation()
 
-                // Do your networking task or background work here.
-                val handler = Handler()
-                handler.postDelayed(Runnable {
-                    val isSuccessful = true
+            // Do your networking task or background work here.
+            val handler = Handler()
+            handler.postDelayed(Runnable {
+                val isSuccessful = true
 
-                    // Choose a stop animation if your call was succesful or not
-                    if (isSuccessful) {
-                        transitionButton.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND,
-                            OnAnimationStopEndListener {
+                // Choose a stop animation if your call was succesful or not
+                if (isSuccessful) {
+
+                    transitionButton.stopAnimation(TransitionButton.StopAnimationStyle.EXPAND,
+                        object: OnAnimationStopEndListener {
+                            override fun onAnimationStopEnd() {
                                 val intent = Intent(baseContext, MainActivity::class.java)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
                                 startActivity(intent)
-                            })
-                    } else {
-                        transitionButton.stopAnimation(
-                            TransitionButton.StopAnimationStyle.SHAKE,
-                            null
-                        )
-                    }
-                }, 2000)
-            }
-        })
+                            }
+                        })
+                } else {
+                    transitionButton.stopAnimation(
+                        TransitionButton.StopAnimationStyle.SHAKE,
+                        null
+                    )
+                }
+            }, 2000)
+        }
     }
 
 
