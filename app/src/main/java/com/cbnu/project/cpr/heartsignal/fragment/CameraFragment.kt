@@ -95,19 +95,19 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
 
     // 리사이클러 뷰
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var chartDataList: ArrayList<Entry>
-    private lateinit var recyclerViewAdapter: ChartDataRecyclerViewAdapter
+//    private lateinit var recyclerView: RecyclerView
+//    private lateinit var chartDataList: ArrayList<Entry>
+//    private lateinit var recyclerViewAdapter: ChartDataRecyclerViewAdapter
 
     // lottie
     private lateinit var lottieAnimationView: LottieAnimationView
     private lateinit var lottie_count: LottieAnimationView
 
     // horizontal bar
-    private lateinit var horizontalBarChart: HorizontalBarChart
-    private val bar_entries = ArrayList<BarEntry>()
-    private lateinit var barDataSet: BarDataSet
-    private lateinit var barData : BarData
+//    private lateinit var horizontalBarChart: HorizontalBarChart
+//    private val bar_entries = ArrayList<BarEntry>()
+//    private lateinit var barDataSet: BarDataSet
+//    private lateinit var barData : BarData
 
     //tickView
     private lateinit var tickerView: TickerView
@@ -198,8 +198,8 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
         //tickerView
         tickerView = fragmentCameraBinding.tickerView
         tickerView.setCharacterLists(TickerUtils.provideNumberList())
-
         AnimationManager.initialize(tickerView, lottieAnimationView)
+        SoundManager.getContext(requireContext())
 
         // 블루투스 데이터를 수신하기 위해 로컬 브로드캐스트 수신기를 등록합니다.
         val intentFilter = IntentFilter("BLUETOOTH_DATA_RECEIVED")
@@ -255,6 +255,8 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
             }
         }
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver, intentFilter)
+        SoundManager.introSound()
+
 
         return fragmentCameraBinding.root
     }
@@ -273,6 +275,11 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
+
+
 
         // Initialize our background executor
         backgroundExecutor = Executors.newSingleThreadExecutor()

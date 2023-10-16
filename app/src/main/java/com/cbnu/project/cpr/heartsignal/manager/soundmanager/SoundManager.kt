@@ -9,15 +9,22 @@ import java.lang.ref.WeakReference
 object SoundManager {
     private var m_mediaPlayer: MediaPlayer? = null
     private var m_mediaCountDown: MediaPlayer? = null
+    private var m_mediaIntro: MediaPlayer? = null
     private var contextRef: WeakReference<Context>? = null
     // Context를 정적(static) 필드에 보관하는 것을 피해야 함. 이렇게 하면 메모리 누수(memory leak)가 발생 가능
     // Context 객체를 강한 참조 대신 약한 참조로 저장가능 이렇게 하면 Context가 필요하지 않을 때 가비지 컬렉터에 의해 수거됨
-    fun initialize(context: Context) {
+    fun getContext(context: Context) {
         this.contextRef = WeakReference(context)
+        m_mediaIntro = MediaPlayer.create(context, R.raw.mp_intro)
+    }
+
+    fun initialize(context: Context) {
         // "삐" 소리 재생을 위한 MediaPlayer 초기화
         m_mediaPlayer = MediaPlayer.create(context, R.raw.mp_beep)
         m_mediaCountDown = MediaPlayer.create(context, R.raw.countdown)
+        m_mediaIntro = MediaPlayer.create(context, R.raw.mp_intro)
     }
+
 
 
     fun playBeepSound() {
@@ -25,9 +32,7 @@ object SoundManager {
         m_mediaPlayer?.start() // 소리 재생
     }
 
-    fun releaseBeepSound() {
-        m_mediaPlayer?.release()
-    }
+
 
     fun startCountDownSound() {
         m_mediaCountDown?.seekTo(0) // 소리를 처음부터 재생
@@ -40,8 +45,23 @@ object SoundManager {
         }
     }
 
+    fun introSound() {
+        m_mediaIntro?.seekTo(0) // 소리를 처음부터 재생
+        m_mediaIntro?.start() // 소리 재생
+        m_mediaIntro?.setOnCompletionListener { mp ->
+            releaseIntroSound()
+        }
+    }
+
+
+    fun releaseBeepSound() {
+        m_mediaPlayer?.release()
+    }
     fun releaseCountDownSound() {
         m_mediaCountDown?.release()
+    }
+    fun releaseIntroSound(){
+        m_mediaIntro?.release()
     }
 
 }
