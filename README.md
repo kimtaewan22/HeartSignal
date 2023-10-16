@@ -15,7 +15,7 @@
 
 ## Build the demo using Android Studio
 
-### Prerequisites
+### *Prerequisites*
 
 *   The **[Android Studio](https://developer.android.com/studio/index.html)** IDE. This sample has been tested on Android Studio Dolphin.
 
@@ -23,7 +23,7 @@
     Nougat) with developer mode enabled. The process of enabling developer mode
     may vary by device.
 
-### Building
+### *Building*
 
 *   Open Android Studio. From the Welcome screen, select Open an existing
     Android Studio project.
@@ -31,9 +31,33 @@
 *   With your Android device connected to your computer and developer mode
     enabled, click on the green Run arrow in Android Studio.
 
+## *Dependency*
+
+#### CameraX Library
+
+    // CameraX core library
+    def camerax_version = '1.2.0-alpha02'
+    implementation "androidx.camera:camera-core:$camerax_version"
+    // CameraX Camera2 extensions
+    implementation "androidx.camera:camera-camera2:$camerax_version"
+    // CameraX Lifecycle library
+    implementation "androidx.camera:camera-lifecycle:$camerax_version"
+    // CameraX View class
+    implementation "androidx.camera:camera-view:$camerax_version"
+
+#### Chart Library
+
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+#### Couroutine
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
+        
+
 ### Models used
 
-**you need three models**
+*you need three models*
 
 > 1. pose_landmaker_full
 > 2. pose_landmaker_heavy
@@ -49,7 +73,7 @@
 
 ### Scenario
 
-**We have created a CPR emergency training scenario composed of three stages**
+*We have created a CPR emergency training scenario composed of three stages*
 
 1. Speech Recognition
 2. Chest Compressions(with The correct angle of the arm) 
