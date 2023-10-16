@@ -42,10 +42,10 @@
 ---
 ### Stack
 > 1. Kotlin
-> 2. C++
-> 3. python(with pytorch)
+> 2. C++ (with Arduino)
+> 3. python (with pytorch)
 > 4. firebase
-> 5. Arduino
+
 
 ### Scenario
 
