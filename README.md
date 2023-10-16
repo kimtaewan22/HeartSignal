@@ -1,8 +1,17 @@
 # About HeartSignal
 
-### Overview
+### *Overview*
 
-This is a CPR Training program
+> This is a CPR Training program
+
+### *Development background of project*
+
+> The primary objective of HeartSignal is to enhance the emergency response capabilities to increase the survival rate of current cardiac arrest patients. According to statistics from the Korea Centers for Disease Control and Prevention, there are 64.7 cases of cardiac arrest patients per 100,000 population, and this number is steadily increasing.
+
+> When cardiopulmonary resuscitation (CPR) is performed by bystanders, the survival rate is 11.6%, more than twice as high as when CPR is not administered. However, as of 2021, the rate of CPR performed by the general public in South Korea stands at only 28.8%, which is significantly lower compared to other advanced countries such as the United States, the United Kingdom, and Japan.
+
+> We have identified a major reason for this low CPR rate, which is the lack of proper knowledge and awareness about emergency procedures. Therefore, HeartSignal focuses on providing appropriate education and guidance to enable individuals to perform correct CPR in emergency situations, with the goal of improving the survival rate of cardiac arrest patients. Through these efforts, we aim to enhance the emergency response capabilities in South Korea, reduce the survival rate gap with advanced countries, and ultimately save more lives.
+
 
 ## Build the demo using Android Studio
 
@@ -33,10 +42,10 @@ This is a CPR Training program
 ---
 ### Stack
 > 1. Kotlin
-> 2. C++
-> 3. python(with pytorch)
+> 2. C++ (with Arduino)
+> 3. python (with pytorch)
 > 4. firebase
-> 5. Arduino
+
 
 ### Scenario
 
