@@ -24,6 +24,7 @@ import com.cbnu.project.cpr.heartsignal.data.BluetoothDeviceInfo
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityBluetoothSearchBinding
 import com.github.angads25.toggle.interfaces.OnToggledListener
 import com.github.angads25.toggle.model.ToggleableView
+import java.util.UUID
 
 class BluetoothSearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBluetoothSearchBinding
@@ -91,13 +92,14 @@ class BluetoothSearchActivity : AppCompatActivity() {
         } else {
 //            startScan()
         }
-        bluetoothManager = BluetoothManager(this)
+        bluetoothManager = BluetoothManager.getInstance(this)
 
         // 리사이클러뷰 초기화
         bleRecyclerView = binding.scannedBleRecyclerView // 리사이클러뷰 ID 변경 필요
         // BluetoothDeviceListAdapter 초기화 시 클릭 리스너 전달
         bluetoothDeviceListAdapter = BluetoothDeviceListAdapter(deviceList) { device ->
             bluetoothManager.connectToDevice(device, binding.connectedDeviceName, binding.connectedDeviceAddr)
+
         }
         bleRecyclerView.adapter = bluetoothDeviceListAdapter
 

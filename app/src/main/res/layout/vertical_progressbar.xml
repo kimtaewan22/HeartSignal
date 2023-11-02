@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="100px"
+        android:layout_height="855px"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <ProgressBar
+                android:id="@+id/progressbar_current_order"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:progress="0"
+                android:max="60"
+                android:layout_height="match_parent"
+                android:progressDrawable="@drawable/shape_current_drink_card"/>
+
+            <ImageView
+                android:layout_centerHorizontal="true"
+                android:id="@+id/imageview_current_drink_card_image"
+                android:layout_width="254px"
+                android:layout_height="283px"
+                android:layout_marginTop="120px"/>
+
+            <TextView
+                android:id="@+id/textview_current_order_number"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/imageview_current_drink_card_image"
+                android:layout_width="wrap_content"
+                tools:text="321"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="70px"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_gravity="center"
+                android:textSize="55px"/>
+
+            <TextView
+                android:id="@+id/textview_current_drink_name"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/textview_current_order_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autoSizeTextType="uniform"
+                android:textAlignment="gravity"
+                tools:text="Whisky on the rocks"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:paddingHorizontal="16px"
+                android:textSize="55px"/>
+        </RelativeLayout>
+
+    </FrameLayout>
+</RelativeLayout>

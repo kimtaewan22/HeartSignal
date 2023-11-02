@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/background">
+        <shape android:layout_width="match_parent">
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="40px"/>
+        </shape>
+    </item>
+
+    <item android:id="@+id/progress">
+        <clip
+            android:clipOrientation="vertical"
+            android:gravity="bottom">
+            <shape>
+                <solid android:color="@color/cardview_dark_background"/>
+                <corners android:radius="40px"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>

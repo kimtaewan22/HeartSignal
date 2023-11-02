@@ -1,9 +1,13 @@
 package com.cbnu.project.cpr.heartsignal.manager.soundmanager
 
 import android.animation.Animator
+import android.annotation.SuppressLint
+import android.content.Context
 import android.view.View
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.R
+import com.cbnu.project.cpr.heartsignal.ble.BluetoothManager
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.robinhood.ticker.TickerView
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +17,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 
 object AnimationManager {
     private var countdownJob: Job? = null
@@ -21,52 +26,71 @@ object AnimationManager {
     private var m_lottieAnimaionView: LottieAnimationView? = null
     private var currentTime = 0f
     private var isCountingDown = false
+    private var startGetData = false
+    @SuppressLint("StaticFieldLeak")
+    private lateinit var bluetoothManager: BluetoothManager
+    private var secondsRemaining = 60f
 
-    fun initialize(tickerView: TickerView, lottieAnimationView: LottieAnimationView) {
+    //BLE 장치에 Write할 내용 설정
+    private val characteristicUUID = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
+    private val data = "ST".toByteArray(Charsets.UTF_8)
+
+    fun initialize(tickerView: TickerView, lottieAnimationView: LottieAnimationView, context: Context) {
         m_tickerView = tickerView
         m_lottieAnimaionView = lottieAnimationView
+        bluetoothManager = BluetoothManager.getInstance(context)
     }
 
-    fun showLottieAnimation() {
-        currentTime += 0.5f
-        m_lottieAnimaionView?.repeatCount = 60
+//    fun showLottieAnimation() {
+//        currentTime += 0.5f
+//        m_lottieAnimaionView?.repeatCount = 60
+//        m_lottieAnimaionView?.playAnimation()
+//        m_lottieAnimaionView?.addAnimatorListener(object : Animator.AnimatorListener {
+//            override fun onAnimationStart(animation: Animator) {
+//
+//            }
+//
+//            override fun onAnimationEnd(animation: Animator) {
+//            }
+//
+//            override fun onAnimationCancel(animation: Animator) {
+//
+//            }
+//
+//            override fun onAnimationRepeat(animation: Animator) {
+//                // 현재 프레임을 로그로 출력합니다.
+////                val currentTime = m_lottieAnimaionView?.progress
+//
+//                // 원하는 프레임에서 이미지를 변경하려면 여기에서 조건문을 사용하여 작업을 수행하면 됩니다.
+//                if (currentTime in 15f..30f) {
+//                    m_lottieAnimaionView?.setAnimation(R.raw.heart_bad2)
+//                    m_lottieAnimaionView?.repeatCount = 30
+//                    m_lottieAnimaionView?.playAnimation()
+//                } else if (currentTime in 30f..45f) {
+//                    m_lottieAnimaionView?.setAnimation(R.raw.heart_bad3)
+//                    m_lottieAnimaionView?.repeatCount = 30
+//                    m_lottieAnimaionView?.playAnimation()
+//                } else if (currentTime in 45f..60f) {
+//                    m_lottieAnimaionView?.setAnimation(R.raw.heart_good1)
+//                    m_lottieAnimaionView?.repeatCount = 30
+//                    m_lottieAnimaionView?.playAnimation()
+//                }
+//                else {
+//                    m_lottieAnimaionView?.cancelAnimation()
+//                }
+//            }
+//        })
+//    }
+    fun showLottieAnimation(animationResource: Int, repeatCount: Int) {
+        // 이미 재생중인 애니메이션을 취소
+        m_lottieAnimaionView?.cancelAnimation()
+
+        // 새 애니메이션 설정 및 재생
+        m_lottieAnimaionView?.setAnimation(animationResource)
+        m_lottieAnimaionView?.repeatCount = repeatCount
         m_lottieAnimaionView?.playAnimation()
-        m_lottieAnimaionView?.addAnimatorListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-
-            }
-
-            override fun onAnimationEnd(animation: Animator) {
-            }
-
-            override fun onAnimationCancel(animation: Animator) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animator) {
-                // 현재 프레임을 로그로 출력합니다.
-//                val currentTime = m_lottieAnimaionView?.progress
-
-                // 원하는 프레임에서 이미지를 변경하려면 여기에서 조건문을 사용하여 작업을 수행하면 됩니다.
-                if (currentTime in 15f..30f) {
-                    m_lottieAnimaionView?.setAnimation(R.raw.heart_bad2)
-                    m_lottieAnimaionView?.repeatCount = 30
-                    m_lottieAnimaionView?.playAnimation()
-                } else if (currentTime in 30f..45f) {
-                    m_lottieAnimaionView?.setAnimation(R.raw.heart_bad3)
-                    m_lottieAnimaionView?.repeatCount = 30
-                    m_lottieAnimaionView?.playAnimation()
-                } else if (currentTime in 45f..60f) {
-                    m_lottieAnimaionView?.setAnimation(R.raw.heart_good1)
-                    m_lottieAnimaionView?.repeatCount = 30
-                    m_lottieAnimaionView?.playAnimation()
-                }
-                else {
-                    m_lottieAnimaionView?.cancelAnimation()
-                }
-            }
-        })
     }
+
 
     fun showLottieCountDown(lottie_count: LottieAnimationView, fragmentCameraBinding: FragmentCameraBinding) {
         // LottieAnimationView를 맨 앞으로 가져옵니다.
@@ -80,7 +104,6 @@ object AnimationManager {
             }
             override fun onAnimationEnd(animation: Animator) {
                 fragmentCameraBinding.lottieCount.visibility = View.GONE
-                tickerViewCountDown()
             }
 
             override fun onAnimationCancel(animation: Animator) {
@@ -105,7 +128,7 @@ object AnimationManager {
 //            val hours = remainingTimeInSeconds / 3600
                 val minutes = (remainingTimeInSeconds % 3600) / 60
                 val secondsRemaining = remainingTimeInSeconds % 60
-
+                setSecondRemainingTime(secondsRemaining.toFloat())
                 val timeString = String.format("%02d:%02d", minutes, secondsRemaining)
 
                 withContext(Dispatchers.Main) {
@@ -132,6 +155,21 @@ object AnimationManager {
 
     fun setTickerViewText(timeString : String) {
         m_tickerView?.text = timeString
+    }
+
+    fun setStartData(is_started: Boolean) {
+        startGetData = is_started
+    }
+    fun writeDataToBLEDevice() {
+        bluetoothManager.writeDataToCharacteristic(data, characteristicUUID)
+    }
+
+    fun getSecondRemainingTime (): Float {
+        return secondsRemaining
+    }
+
+    fun setSecondRemainingTime (time: Float) {
+        this.secondsRemaining = time
     }
 
 }

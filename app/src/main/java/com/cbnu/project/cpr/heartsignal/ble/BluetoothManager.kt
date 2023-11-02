@@ -1,6 +1,8 @@
 package com.cbnu.project.cpr.heartsignal.ble
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCallback
@@ -29,6 +31,48 @@ class BluetoothManager(private val context: Context) {
     val handler = Handler(Looper.getMainLooper())
     val serviceUUID = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
     private var lastReceivedData: String? = null // 이전에 수신한 데이터를 저장하기 위한 변수
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        @Volatile
+        private var INSTANCE: BluetoothManager? = null
+
+        fun getInstance(context: Context): BluetoothManager {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: BluetoothManager(context.applicationContext).also {
+                    INSTANCE = it
+                }
+            }
+        }
+    }
+
+    fun writeDataToCharacteristic(data: ByteArray, characteristicUUID: UUID) {
+        bluetoothGatt?.let { gatt ->
+            // 해당 UUID를 가진 특성 찾기
+            val service = gatt.getService(serviceUUID) ?: return
+            val characteristic = service.getCharacteristic(characteristicUUID) ?: return
+
+            // 특성에 데이터 설정
+            characteristic.value = data
+
+            // 특성에 데이터 쓰기
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
+            gatt.writeCharacteristic(characteristic)
+        }
+    }
 
     fun connectToDevice(device: BluetoothDevice, connectedDeviceName: TextView, connectedDeviceAddr: TextView) {
         // 여기에서 BluetoothGattCallback 및 다른 필요한 변수를 초기화합니다.
@@ -143,6 +187,18 @@ class BluetoothManager(private val context: Context) {
                 }
             }
 
+            override fun onCharacteristicWrite(
+                gatt: BluetoothGatt?,
+                characteristic: BluetoothGattCharacteristic?,
+                status: Int
+            ) {
+                if (status == BluetoothGatt.GATT_SUCCESS) {
+                    Log.d(TAG + "_WRITE", "Data written successfully to ${characteristic?.uuid}")
+                } else {
+                    Log.e(TAG, "Failed to write data to ${characteristic?.uuid}")
+                }
+            }
+
             override fun onCharacteristicChanged(
                 gatt: BluetoothGatt?,
                 characteristic: BluetoothGattCharacteristic?
@@ -177,4 +233,13 @@ class BluetoothManager(private val context: Context) {
         bluetoothGatt = device.connectGatt(context, false, gattCallback)
     }
     // 필요한 경우 다른 Bluetooth 관리 메서드를 추가합니다.
+//    object PermissionUtils {
+//        fun hasPermission(context: Context, permission: String): Boolean {
+//            return ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
+//        }
+//
+//        fun requestPermission(activity: Activity, permission: String, requestCode: Int) {
+//            ActivityCompat.requestPermissions(activity, arrayOf(permission), requestCode)
+//        }
+//    }
 }

@@ -2,6 +2,8 @@ package com.cbnu.project.cpr.heartsignal.manager.chartmanager
 
 import android.R.attr.entries
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.cbnu.project.cpr.heartsignal.R
 import com.github.mikephil.charting.charts.LineChart
@@ -20,16 +22,29 @@ object LineChartManager {
     private val xValues = mutableListOf<Float>()
     private val maxDataPoints = 30 // 최대 데이터 포인트 개수
     private val totalDataSet = ArrayList<Entry>()
+    private var compressionsThisSecond = 0
+    private var lastTime = 0f
+    private var lastCompressionTime = -0.5f
 
-
+    private val handler = Handler(Looper.getMainLooper())
+    private val updateLastTimeRunnable: Runnable = object : Runnable {
+        override fun run() {
+            PointerSpeedmeterManager.setupSpeedmeter(lastTime)
+            handler.postDelayed(this, 2000) // 1초 후에 다시 실행
+        }
+    }
 
     fun initialize(lineChart: LineChart) {
         m_lineChart = lineChart
         setupLineChart() // Call setup once when initializing
     }
 
-    fun setData() {
+    fun getTotalDataSet(): ArrayList<Entry> {
+        return totalDataSet
+    }
 
+    fun resetTotalDataset() {
+        totalDataSet.clear()
     }
 
     fun setupLineChart() {
@@ -98,6 +113,25 @@ object LineChartManager {
 //                lineDataSetList.removeAt(0)
 //                xValues.removeAt(0)
 //            }
+            if (intensity >= 60 && (time - lastCompressionTime) >= 2.0) {
+                compressionsThisSecond++
+                lastCompressionTime = time
+            }
+
+            // When moving to the next second, project the compressions to a full minute
+            if (time.toInt() != lastTime.toInt()) {
+//                val projectedCompressionsPerMinute = (compressionsThisSecond * 60).toInt() // Projection
+                val projectedCompressionsPerMinute = Math.round((compressionsThisSecond * 60).toDouble()) // Projection
+
+                Log.d("CAMERAFRAGMENT_addBLEDataToList_setupLineChartData", "Projected Compressions Per Minute: $projectedCompressionsPerMinute")
+
+                // Reset the count for the new second
+                compressionsThisSecond = 0
+            }
+
+            lastTime = time
+            handler.post(updateLastTimeRunnable) // Runnable 시작
+
             totalDataSet.add(Entry(time, intensity))
             lineDataSetList.add(Entry(time, intensity))
             xValues.add(time)
@@ -147,11 +181,12 @@ object LineChartManager {
     fun clearData() {
         lineDataSetList.clear()
         xValues.clear()
+        stopUpdatingLastTime()
 //        m_lineChart.invalidate()
 //        m_lineChart.clear()
     }
 
-    fun setUpTotalData(){
-
+    fun stopUpdatingLastTime() {
+        handler.removeCallbacks(updateLastTimeRunnable) // Runnable 중지
     }
 }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DepthBar">
+        <attr name="depth" format="integer" />
+        <attr name="maxDepth" format="integer" />
+        <attr name="barColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="StripedProgressBar">
+        <attr name="stripeColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="stripeWidth" format="dimension" />
+        <attr name="gapWidth" format="dimension" />
+    </declare-styleable>
+</resources>

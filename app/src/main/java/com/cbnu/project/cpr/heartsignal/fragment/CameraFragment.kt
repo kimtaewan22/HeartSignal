@@ -23,7 +23,6 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import kotlinx.coroutines.*
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -42,23 +41,19 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.Navigation
-import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.viewModel.MainViewModel
 import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
 import com.cbnu.project.cpr.heartsignal.R
-import com.cbnu.project.cpr.heartsignal.adapter.ChartDataRecyclerViewAdapter
+import com.cbnu.project.cpr.heartsignal.ble.BluetoothManager
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.cbnu.project.cpr.heartsignal.manager.chartmanager.LineChartManager
+import com.cbnu.project.cpr.heartsignal.manager.chartmanager.PointerSpeedmeterManager
+import com.cbnu.project.cpr.heartsignal.manager.resultmanager.ResultBottomSheetManager
 import com.cbnu.project.cpr.heartsignal.manager.soundmanager.AnimationManager
 import com.cbnu.project.cpr.heartsignal.manager.soundmanager.SoundManager
-import com.cbnu.project.cpr.heartsignal.step.Step0Activity
-import com.github.mikephil.charting.charts.HorizontalBarChart
+import com.github.anastr.speedviewlib.PointerSpeedometer
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.data.Entry
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
@@ -66,6 +61,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -91,6 +87,11 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     private var cameraFacing = CameraSelector.LENS_FACING_FRONT
     //그래프 설정
     private lateinit var lineChart: LineChart
+    private lateinit var pointerSpeedometer: PointerSpeedometer
+    var isAnimation1Played = false
+    var isAnimation2Played = false
+    var isAnimation3Played = false
+
 
 
 
@@ -182,6 +183,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
         //line
         lineChart = fragmentCameraBinding.lineChart
+        pointerSpeedometer = fragmentCameraBinding.pointerSpeedometer
         lineChart.setNoDataText("잠시만 기다려 주세요")
 //        recyclerView = fragmentCameraBinding.recyclerView
 //        chartDataList = ArrayList()
@@ -198,64 +200,78 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
         //tickerView
         tickerView = fragmentCameraBinding.tickerView
         tickerView.setCharacterLists(TickerUtils.provideNumberList())
-        AnimationManager.initialize(tickerView, lottieAnimationView)
-        SoundManager.getContext(requireContext())
+        AnimationManager.initialize(tickerView, lottieAnimationView, requireContext())
+        PointerSpeedmeterManager.initialize(pointerSpeedometer)
+
 
         // 블루투스 데이터를 수신하기 위해 로컬 브로드캐스트 수신기를 등록합니다.
         val intentFilter = IntentFilter("BLUETOOTH_DATA_RECEIVED")
         val receiver = object : BroadcastReceiver() {
-            override  fun onReceive(context: Context?, intent: Intent?) {
-                if (intent?.action == "BLUETOOTH_DATA_RECEIVED") {
-                    val data = intent.getStringExtra("data")
-                    // 데이터 처리 중인 경우에만 작업을 실행
-                    if(data!!.contains("SO")) {
-//                        processingData = true // 데이터 처리 중으로 플래그 설정
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val data = intent?.getStringExtra("data") ?: return // 'data'가 null이면 여기서 함수 종료
+
+                when {
+                    data.contains("SO") && !processingData -> {
+                        // 데이터 처리 시작
+                        processingData = true
+                        SoundManager.initialize(requireContext())
                         LineChartManager.generateInitialData()
                         LineChartManager.initialize(lineChart)
-                        /* "SO" 신호를 받은 뒤 5초의 딜레이 후 실제 데이터 전송 받음 */
-                        if (!processingData) {
-                            processingData = true
-                            SoundManager.initialize(requireContext())
-                            AnimationManager.updateData()
+                        // 딜레이 후에 처리 시작
+                        CoroutineScope(Dispatchers.Main).launch {
+                            AnimationManager.showLottieCountDown(lottie_count, fragmentCameraBinding)
+                            val delayMillis = 500L // 0.5초마다 업데이트
+                            while (processingData) {
+                                SoundManager.playBeepSound()
+                                val currentTime = AnimationManager.getSecondRemainingTime()
 
-                            val handler = Handler()
-                            handler.postDelayed({
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    AnimationManager.showLottieCountDown(
-                                        lottie_count,
-                                        fragmentCameraBinding
-                                    )
-                                    val delayMillis = 500L // 0.5초마다 업데이트
-                                    while (processingData) {
-                                        // 타이머 소리 재생
-                                        SoundManager.playBeepSound()
-                                        // lottie play
-                                        AnimationManager.showLottieAnimation()
-                                        // 지정된 시간만큼 대기
-                                        delay(delayMillis)
+
+
+                                // 현재 시간을 기준으로 애니메이션 변경
+                                when {
+                                    currentTime in 15f..30f && !isAnimation1Played -> {
+                                        AnimationManager.showLottieAnimation(R.raw.heart_bad2, 30)
+                                        isAnimation1Played = true // 애니메이션이 재생되었다고 표시
+                                    }
+
+                                    currentTime in 30f..45f && !isAnimation2Played -> {
+                                        AnimationManager.showLottieAnimation(R.raw.heart_bad3, 30)
+                                        isAnimation2Played = true // 애니메이션이 재생되었다고 표시
+                                    }
+
+                                    currentTime in 45f..60f && !isAnimation3Played -> {
+                                        AnimationManager.showLottieAnimation(R.raw.heart_good1, 30)
+                                        isAnimation3Played = true // 애니메이션이 재생되었다고 표시
                                     }
                                 }
-                            }, 5000)
+
+                                delay(delayMillis)
+                            }
                         }
                     }
-                    else {
-                        if(data!!.contains("SF"))
-                        {
-                            /* 한 라운드가 종료 - 사용한 리스트나 데이터들 메모리 정리 필요 */
-                            LineChartManager.clearData()
-                            SoundManager.releaseBeepSound()
-//                            AnimationManager.stopTickerViewCountDown()
-                            processingData = false
-                        }
-                        else{
-                            updateUI(data)
-                        }
+                    data.contains("ST") -> { // 데이터 받기 시작
+                        AnimationManager.tickerViewCountDown()
+                    }
+                    data.contains("SF") -> {
+                        // 한 라운드 종료 처리
+                        LineChartManager.clearData()
+                        SoundManager.releaseBeepSound()
+                        isAnimation1Played = false
+                        isAnimation2Played = false
+                        isAnimation3Played = false
+                        processingData = false
+                        // 결과 보여주기
+                        ResultBottomSheetManager().showBottomSheet(parentFragmentManager)
+                    }
+                    else -> {
+                        updateUI(data) // 다른 데이터 처리
                     }
                 }
             }
         }
+
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver, intentFilter)
-        SoundManager.introSound()
+//        SoundManager.introSound()
 
 
         return fragmentCameraBinding.root
@@ -267,6 +283,14 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
             LineChartManager.addBLEDataToList(data!!)
             LineChartManager.updateLineChart()
         }
+    }
+
+
+    //
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        SoundManager.getContext(context)
+
     }
 
 
@@ -419,5 +443,4 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
             }
         }
     }
-
 }
