@@ -7,7 +7,7 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xm
-/.idea/*
+/.idea/*.xml
 
 .DS_Store
 /build

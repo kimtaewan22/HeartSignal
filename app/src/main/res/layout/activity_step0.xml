@@ -28,12 +28,13 @@
                     android:layout_width="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:layout_height="wrap_content">
+
                     <ImageView
                         android:id="@+id/source"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/logo"
                         android:layout_width="match_parent"
-                        android:layout_height="325dp" />
+                        android:layout_height="325dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/cprlogo" />
                 </com.daimajia.androidviewhover.BlurLayout>
                 <com.daimajia.androidviewhover.BlurLayout
                     android:id="@+id/blur_layout2"
@@ -49,7 +50,7 @@
                         android:layout_below="@+id/source"
                         android:layout_centerInParent="true"
                         android:scaleType="fitXY"
-                        android:src="@drawable/mainlogo" />
+                        android:src="@drawable/cprlogo2" />
                 </com.daimajia.androidviewhover.BlurLayout>
 
                 <com.daimajia.androidviewhover.BlurLayout
@@ -66,7 +67,7 @@
                         android:layout_below="@+id/source"
                         android:layout_centerInParent="true"
                         android:scaleType="fitXY"
-                        android:src="@drawable/mainlogo" />
+                        android:src="@drawable/cprlogo3" />
                 </com.daimajia.androidviewhover.BlurLayout>
 
                 <com.daimajia.androidviewhover.BlurLayout
@@ -83,7 +84,7 @@
                         android:layout_below="@+id/source"
                         android:layout_centerInParent="true"
                         android:scaleType="fitXY"
-                        android:src="@drawable/mainlogo" />
+                        android:src="@drawable/cprlogo4" />
                 </com.daimajia.androidviewhover.BlurLayout>
             </RelativeLayout>
 
