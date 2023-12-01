@@ -171,7 +171,6 @@ class Step1Activity : AppCompatActivity() {
                 else{
                     bottomSheetTitle.text = "다시 말해보세요"
                     startNextSpeechRecognition()
-
                 }
             }
             1 -> {
@@ -184,7 +183,6 @@ class Step1Activity : AppCompatActivity() {
                 else{
                     bottomSheetTitle.text = "다시 말해보세요"
                     startNextSpeechRecognition()
-
                 }
             }
             2 -> {

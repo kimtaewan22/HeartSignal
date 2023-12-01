@@ -43,6 +43,7 @@
     <color name="incorrect_pose">#FF0000</color>
 
     <color name="background_color">#3C4152</color>
+    <color name="background_gauge_color">#3F5293</color>
 
     <color name="polluted_waves1">#394948</color>
     <color name="polluted_waves2">#5a7874</color>
@@ -54,5 +55,9 @@
     <color name="colorSecondaryLight">#ffddc1</color>
     <color name="colorSecondaryDark">#c97b63</color>
     <color name="colorOnSecondary">#212121</color>
+    <color name="colorCompressionCorrect">#75BF72</color>
+    <color name="colorCompressionDisCorrect">#ED5959</color>
+    <color name="colorCompressionClear">#ffffff</color>
+
 
 </resources>

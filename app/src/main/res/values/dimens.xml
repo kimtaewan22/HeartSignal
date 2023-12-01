@@ -32,7 +32,7 @@
     <dimen name="record_bottom_sheet_dialog_padding_top">12dp</dimen>
     <dimen name="record_bottom_sheet_dialog_padding_bottom">24dp</dimen>
     <dimen name="record_bottom_sheet_dialog_padding_horizontal">16dp</dimen>
-    <dimen name="record_bottom_sheet_dialog_lottie_size">100dp</dimen>
+    <dimen name="record_bottom_sheet_dialog_lottie_size">80dp</dimen>
     <dimen name="record_bottom_sheet_content_margin_top">16dp</dimen>
     <dimen name="record_bottom_sheet_subtitle_bg_radius">20dp</dimen>
     <dimen name="record_bottom_sheet_subtitle_bg_padding">10dp</dimen>

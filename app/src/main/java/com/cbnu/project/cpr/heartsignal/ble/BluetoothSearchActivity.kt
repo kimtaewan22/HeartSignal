@@ -24,7 +24,6 @@ import com.cbnu.project.cpr.heartsignal.data.BluetoothDeviceInfo
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityBluetoothSearchBinding
 import com.github.angads25.toggle.interfaces.OnToggledListener
 import com.github.angads25.toggle.model.ToggleableView
-import java.util.UUID
 
 class BluetoothSearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBluetoothSearchBinding

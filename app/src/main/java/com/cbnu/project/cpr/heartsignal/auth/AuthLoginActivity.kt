@@ -7,13 +7,11 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.cbnu.project.cpr.heartsignal.MainActivity
 import com.cbnu.project.cpr.heartsignal.databinding.ActivityAuthLoginBinding
-import com.cbnu.project.cpr.heartsignal.step.Step2Activity
 import com.royrodriguez.transitionbutton.TransitionButton
 import com.royrodriguez.transitionbutton.TransitionButton.OnAnimationStopEndListener
 

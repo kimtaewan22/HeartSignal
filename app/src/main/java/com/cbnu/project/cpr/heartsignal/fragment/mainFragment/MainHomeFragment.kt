@@ -117,7 +117,7 @@ class MainHomeFragment : Fragment() {
         xAxis.textSize = 16f
         xAxis.yOffset = 0f
         xAxis.xOffset = 0f
-        val labels = arrayOf("A+\n압박 강도", "음성 인식", "압박 횟수", "시간", "정확도")
+        val labels = arrayOf("압박 강도", "음성 인식", "압박 횟수", "시간", "정확도")
 
 
         xAxis.setValueFormatter(object : IndexAxisValueFormatter(labels){})

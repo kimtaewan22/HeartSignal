@@ -9,6 +9,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.ble.BluetoothManager
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
+import com.cbnu.project.cpr.heartsignal.manager.chartmanager.LineChartManager
 import com.robinhood.ticker.TickerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ object AnimationManager {
     private var remainingTimeInSeconds = 60 // 초기값을 60으로 설정하여 60부터 시작
     private var m_tickerView : TickerView? = null
     private var m_lottieAnimaionView: LottieAnimationView? = null
-    private var currentTime = 0f
+    private var currentTime = 60f
     private var isCountingDown = false
     private var startGetData = false
     @SuppressLint("StaticFieldLeak")
@@ -41,46 +42,6 @@ object AnimationManager {
         bluetoothManager = BluetoothManager.getInstance(context)
     }
 
-//    fun showLottieAnimation() {
-//        currentTime += 0.5f
-//        m_lottieAnimaionView?.repeatCount = 60
-//        m_lottieAnimaionView?.playAnimation()
-//        m_lottieAnimaionView?.addAnimatorListener(object : Animator.AnimatorListener {
-//            override fun onAnimationStart(animation: Animator) {
-//
-//            }
-//
-//            override fun onAnimationEnd(animation: Animator) {
-//            }
-//
-//            override fun onAnimationCancel(animation: Animator) {
-//
-//            }
-//
-//            override fun onAnimationRepeat(animation: Animator) {
-//                // 현재 프레임을 로그로 출력합니다.
-////                val currentTime = m_lottieAnimaionView?.progress
-//
-//                // 원하는 프레임에서 이미지를 변경하려면 여기에서 조건문을 사용하여 작업을 수행하면 됩니다.
-//                if (currentTime in 15f..30f) {
-//                    m_lottieAnimaionView?.setAnimation(R.raw.heart_bad2)
-//                    m_lottieAnimaionView?.repeatCount = 30
-//                    m_lottieAnimaionView?.playAnimation()
-//                } else if (currentTime in 30f..45f) {
-//                    m_lottieAnimaionView?.setAnimation(R.raw.heart_bad3)
-//                    m_lottieAnimaionView?.repeatCount = 30
-//                    m_lottieAnimaionView?.playAnimation()
-//                } else if (currentTime in 45f..60f) {
-//                    m_lottieAnimaionView?.setAnimation(R.raw.heart_good1)
-//                    m_lottieAnimaionView?.repeatCount = 30
-//                    m_lottieAnimaionView?.playAnimation()
-//                }
-//                else {
-//                    m_lottieAnimaionView?.cancelAnimation()
-//                }
-//            }
-//        })
-//    }
     fun showLottieAnimation(animationResource: Int, repeatCount: Int) {
         // 이미 재생중인 애니메이션을 취소
         m_lottieAnimaionView?.cancelAnimation()
@@ -104,6 +65,7 @@ object AnimationManager {
             }
             override fun onAnimationEnd(animation: Animator) {
                 fragmentCameraBinding.lottieCount.visibility = View.GONE
+                writeDataToBLEDevice()
             }
 
             override fun onAnimationCancel(animation: Animator) {
@@ -157,9 +119,6 @@ object AnimationManager {
         m_tickerView?.text = timeString
     }
 
-    fun setStartData(is_started: Boolean) {
-        startGetData = is_started
-    }
     fun writeDataToBLEDevice() {
         bluetoothManager.writeDataToCharacteristic(data, characteristicUUID)
     }
@@ -171,5 +130,6 @@ object AnimationManager {
     fun setSecondRemainingTime (time: Float) {
         this.secondsRemaining = time
     }
+
 
 }

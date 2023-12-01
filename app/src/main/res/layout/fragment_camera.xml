@@ -20,101 +20,166 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/lottie_count"
+    <FrameLayout
+        android:id="@+id/compressionArrowTop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:lottie_autoPlay="false"
-        android:visibility="gone"
-        app:lottie_rawRes="@raw/anim_count"/>
+        android:layout_height="45dp"
+        android:layout_gravity="top"/>
 
-    <LinearLayout
+    <FrameLayout
+        android:id="@+id/compressionArrowBottom"
         android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_gravity="bottom"/>
+
+    <FrameLayout
+        android:id="@+id/compressionArrowLeft"
+        android:layout_width="45dp"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
-        <FrameLayout
-            android:layout_width="400dp"
-            android:layout_height="match_parent">
+        android:layout_gravity="left"/>
+
+    <FrameLayout
+        android:id="@+id/compressionArrowRight"
+        android:layout_width="45dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"/>
 
 
-            <androidx.camera.view.PreviewView
-                android:id="@+id/view_finder"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:scaleType="fillStart" />
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_with_border"
+        android:layout_margin="45dp">
 
-            <com.cbnu.project.cpr.heartsignal.OverlayView
-                android:id="@+id/overlay"
-                android:visibility="visible"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-              />
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|top"
-                app:cardCornerRadius="20dp"
-                android:layout_marginTop="20dp"
-                >
-
-                <com.robinhood.ticker.TickerView
-                    android:id="@+id/tickerView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="60:00"
-                    android:padding="10dp"
-                    android:textColor="@color/blue_grey_400"
-                    android:textSize="48sp"
-                    android:gravity="center"
-                    />
-
-
-            </androidx.cardview.widget.CardView>
-
-
-
-
-
-        </FrameLayout>
-
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_count"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:lottie_autoPlay="false"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/anim_count"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="400dp"
+                android:layout_height="match_parent">
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lineChart"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:background="@android:color/darker_gray" />
+                <androidx.camera.view.PreviewView
+                    android:id="@+id/view_finder"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:scaleType="fillStart" />
+
+                <com.cbnu.project.cpr.heartsignal.OverlayView
+                    android:id="@+id/overlay"
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                  />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|top"
+                    app:cardCornerRadius="20dp"
+                    android:layout_marginTop="20dp"
+                    >
+
+                    <com.robinhood.ticker.TickerView
+                        android:id="@+id/tickerView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="60:00"
+                        android:padding="10dp"
+                        android:textColor="@color/blue_grey_400"
+                        android:textSize="48sp"
+                        android:gravity="center"
+                        />
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lineChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@android:color/darker_gray" />
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="2"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
-                    <com.github.mikephil.charting.charts.HorizontalBarChart
-                        android:id="@+id/horizontalBar"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_margin="3dp"
-                        />
+                        android:layout_weight="2"
+                        android:weightSum="3"
+                        android:orientation="horizontal">
+
+                        <ProgressBar
+                            android:id="@+id/vertical_progressbar"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_margin="10dp"
+                            android:layout_weight="0.5"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:progressDrawable="@drawable/progress_bar_vertical"
+                            android:progress="120"
+                            android:max="120"
+                            android:rotation="0" />
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@android:color/darker_gray" />
+
+    <!--                    <androidx.recyclerview.widget.RecyclerView-->
+    <!--                        android:id="@+id/recyclerView"-->
+    <!--                        android:layout_width="match_parent"-->
+    <!--                        android:layout_height="0dp"-->
+    <!--                        android:layout_weight="1"-->
+    <!--                        android:layout_margin="10dp"-->
+    <!--                        />-->
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2.5"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            >
+
+                            <com.github.anastr.speedviewlib.ProgressiveGauge
+                                android:id="@+id/progressiveGauge"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
 
                     <View
                         android:layout_width="1dp"
@@ -123,52 +188,21 @@
                         android:layout_marginBottom="10dp"
                         android:background="@android:color/darker_gray" />
 
-<!--                    <androidx.recyclerview.widget.RecyclerView-->
-<!--                        android:id="@+id/recyclerView"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="0dp"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:layout_margin="10dp"-->
-<!--                        />-->
-
-                    <com.github.anastr.speedviewlib.PointerSpeedometer
-                        android:id="@+id/pointerSpeedometer"
-                        android:padding="10dp"
-                        android:layout_weight="2"
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/lottie"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        app:lottie_autoPlay="true"
+                        app:lottie_repeatCount="30"
+                        app:lottie_rawRes="@raw/heart_bad3"/>
 
                 </LinearLayout>
 
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@android:color/darker_gray" />
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottie"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    app:lottie_autoPlay="true"
-                    app:lottie_repeatCount="30"
-                    app:lottie_rawRes="@raw/heart_bad1"/>
-
             </LinearLayout>
 
+
         </LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-
-    </LinearLayout>
-
-
-
-
-
-
-<!--    <include-->
-<!--        android:id="@+id/bottom_sheet_layout"-->
-<!--        layout="@layout/info_bottom_sheet" />-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

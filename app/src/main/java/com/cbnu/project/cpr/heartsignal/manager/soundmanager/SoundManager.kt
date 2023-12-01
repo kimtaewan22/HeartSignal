@@ -18,9 +18,9 @@ object SoundManager {
         m_mediaIntro = MediaPlayer.create(context, R.raw.mp_intro)
     }
 
-    fun initialize(context: Context) {
+    fun initialize(context: Context?) {
         // "삐" 소리 재생을 위한 MediaPlayer 초기화
-        m_mediaPlayer = MediaPlayer.create(context, R.raw.mp_beep)
+        m_mediaPlayer = MediaPlayer.create(context, R.raw.mp_metronome)
         m_mediaCountDown = MediaPlayer.create(context, R.raw.countdown)
         m_mediaIntro = MediaPlayer.create(context, R.raw.mp_intro)
     }

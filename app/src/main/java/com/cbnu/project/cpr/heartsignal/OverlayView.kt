@@ -231,7 +231,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
 //        )
 
         //몸의 좌측 탐색
-        if (leftShoulderElbowWrist >= 155){
+        if (leftShoulderElbowWrist >= 130){
             linePaint.color =
                 ContextCompat.getColor(
                     context!!,
@@ -252,7 +252,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 linePaint
             )
         }
-        else if (leftShoulderElbowWrist < 155) // 올바르지 못함
+        else if (leftShoulderElbowWrist < 130) // 올바르지 못함
         {
             linePaint.color =
                 ContextCompat.getColor(
@@ -275,7 +275,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
             )
         }
         // 몸의 우측 탐색
-        if (rightShoulderElbowWrist >= 155){
+        if (rightShoulderElbowWrist >= 130){
             linePaint.color =
                 ContextCompat.getColor(
                     context!!,
@@ -296,7 +296,7 @@ class OverlayView(context: Context?, attrs: AttributeSet?) :
                 linePaint
             )
         }
-        else if (rightShoulderElbowWrist < 155) // 올바르지 못함
+        else if (rightShoulderElbowWrist < 130) // 올바르지 못함
         {
             linePaint.color =
                 ContextCompat.getColor(

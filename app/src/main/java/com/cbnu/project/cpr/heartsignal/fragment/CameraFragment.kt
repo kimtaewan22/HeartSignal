@@ -27,6 +27,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.Camera
@@ -45,14 +47,16 @@ import com.airbnb.lottie.LottieAnimationView
 import com.cbnu.project.cpr.heartsignal.viewModel.MainViewModel
 import com.cbnu.project.cpr.heartsignal.PoseLandmarkerHelper
 import com.cbnu.project.cpr.heartsignal.R
-import com.cbnu.project.cpr.heartsignal.ble.BluetoothManager
 import com.cbnu.project.cpr.heartsignal.databinding.FragmentCameraBinding
 import com.cbnu.project.cpr.heartsignal.manager.chartmanager.LineChartManager
-import com.cbnu.project.cpr.heartsignal.manager.chartmanager.PointerSpeedmeterManager
+import com.cbnu.project.cpr.heartsignal.manager.chartmanager.ProgressiveGaugeManager
+import com.cbnu.project.cpr.heartsignal.manager.chartmanager.VerticalProgressbarManager
+import com.cbnu.project.cpr.heartsignal.manager.framemanager.FrameBackgroundManager
 import com.cbnu.project.cpr.heartsignal.manager.resultmanager.ResultBottomSheetManager
 import com.cbnu.project.cpr.heartsignal.manager.soundmanager.AnimationManager
 import com.cbnu.project.cpr.heartsignal.manager.soundmanager.SoundManager
-import com.github.anastr.speedviewlib.PointerSpeedometer
+import com.cbnu.project.cpr.heartsignal.step.StepProgressActivity
+import com.github.anastr.speedviewlib.ProgressiveGauge
 import com.github.mikephil.charting.charts.LineChart
 import com.google.mediapipe.tasks.vision.core.RunningMode
 import com.robinhood.ticker.TickerUtils
@@ -61,7 +65,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.UUID
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -78,6 +81,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     private val fragmentCameraBinding
         get() = _fragmentCameraBinding!!
 
+    private lateinit var progressBar: ProgressBar
     private lateinit var poseLandmarkerHelper: PoseLandmarkerHelper
     private val viewModel: MainViewModel by activityViewModels()
     private var preview: Preview? = null
@@ -87,40 +91,26 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
     private var cameraFacing = CameraSelector.LENS_FACING_FRONT
     //그래프 설정
     private lateinit var lineChart: LineChart
-    private lateinit var pointerSpeedometer: PointerSpeedometer
+    private lateinit var progressiveGauge: ProgressiveGauge
+
+    private lateinit var frameLayoutTop: FrameLayout
+    private lateinit var frameLayoutBottom: FrameLayout
+    private lateinit var frameLayoutLeft: FrameLayout
+    private lateinit var frameLayoutRight: FrameLayout
+
     var isAnimation1Played = false
     var isAnimation2Played = false
     var isAnimation3Played = false
-
-
-
-
-    // 리사이클러 뷰
-//    private lateinit var recyclerView: RecyclerView
-//    private lateinit var chartDataList: ArrayList<Entry>
-//    private lateinit var recyclerViewAdapter: ChartDataRecyclerViewAdapter
+    var isAnimation4Played = false
 
     // lottie
     private lateinit var lottieAnimationView: LottieAnimationView
     private lateinit var lottie_count: LottieAnimationView
 
-    // horizontal bar
-//    private lateinit var horizontalBarChart: HorizontalBarChart
-//    private val bar_entries = ArrayList<BarEntry>()
-//    private lateinit var barDataSet: BarDataSet
-//    private lateinit var barData : BarData
 
     //tickView
     private lateinit var tickerView: TickerView
     private var processingData = false
-
-
-
-//    val apiService = RetrofitInstance.retrofit.create(ApiService::class.java)
-//    val dataPointList = ArrayList<DataPoint>()
-//    val serverUrl = "http://127.0.0.1:5000/upload_data/"
-
-
     /** Blocking ML operations are performed using this executor */
     private lateinit var backgroundExecutor: ExecutorService
 
@@ -180,29 +170,29 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
         _fragmentCameraBinding =
             FragmentCameraBinding.inflate(inflater, container, false)
 
+        frameLayoutTop = fragmentCameraBinding.compressionArrowTop
+        frameLayoutBottom = fragmentCameraBinding.compressionArrowBottom
+        frameLayoutLeft = fragmentCameraBinding.compressionArrowLeft
+        frameLayoutRight = fragmentCameraBinding.compressionArrowRight
+
 
         //line
         lineChart = fragmentCameraBinding.lineChart
-        pointerSpeedometer = fragmentCameraBinding.pointerSpeedometer
+        progressBar = fragmentCameraBinding.verticalProgressbar
+        progressiveGauge = fragmentCameraBinding.progressiveGauge
         lineChart.setNoDataText("잠시만 기다려 주세요")
-//        recyclerView = fragmentCameraBinding.recyclerView
-//        chartDataList = ArrayList()
 
-        // horizontal
-//        horizontalBarChart = fragmentCameraBinding.horizontalBar
-//        // RecyclerView 설정
-//        recyclerViewAdapter = ChartDataRecyclerViewAdapter(chartDataList)
-//        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//        recyclerView.adapter = recyclerViewAdapter
         // lottie
         lottieAnimationView = fragmentCameraBinding.lottie
         lottie_count = fragmentCameraBinding.lottieCount
         //tickerView
         tickerView = fragmentCameraBinding.tickerView
+        tickerView = fragmentCameraBinding.tickerView
         tickerView.setCharacterLists(TickerUtils.provideNumberList())
         AnimationManager.initialize(tickerView, lottieAnimationView, requireContext())
-        PointerSpeedmeterManager.initialize(pointerSpeedometer)
-
+        ProgressiveGaugeManager.initialize(progressiveGauge)
+        VerticalProgressbarManager.initialize(progressBar)
+        FrameBackgroundManager.initialize(frameLayoutTop, frameLayoutBottom, frameLayoutLeft, frameLayoutRight, requireContext())
 
         // 블루투스 데이터를 수신하기 위해 로컬 브로드캐스트 수신기를 등록합니다.
         val intentFilter = IntentFilter("BLUETOOTH_DATA_RECEIVED")
@@ -214,7 +204,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                     data.contains("SO") && !processingData -> {
                         // 데이터 처리 시작
                         processingData = true
-                        SoundManager.initialize(requireContext())
+                        SoundManager.initialize(getContext())
                         LineChartManager.generateInitialData()
                         LineChartManager.initialize(lineChart)
                         // 딜레이 후에 처리 시작
@@ -222,26 +212,29 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                             AnimationManager.showLottieCountDown(lottie_count, fragmentCameraBinding)
                             val delayMillis = 500L // 0.5초마다 업데이트
                             while (processingData) {
-                                SoundManager.playBeepSound()
+//                                SoundManager.playBeepSound()
                                 val currentTime = AnimationManager.getSecondRemainingTime()
-
+//                                val successCount = LineChartManager.getCompressionSuccessCount().toFloat()
+                                SoundManager.playBeepSound()
 
 
                                 // 현재 시간을 기준으로 애니메이션 변경
                                 when {
-                                    currentTime in 15f..30f && !isAnimation1Played -> {
-                                        AnimationManager.showLottieAnimation(R.raw.heart_bad2, 30)
-                                        isAnimation1Played = true // 애니메이션이 재생되었다고 표시
+                                    currentTime in 1f..15f && !isAnimation4Played -> {
+                                        AnimationManager.showLottieAnimation(R.raw.heart_success1, 30)
+                                        isAnimation4Played = true // 애니메이션이 재생되었다고 표시
                                     }
-
-                                    currentTime in 30f..45f && !isAnimation2Played -> {
+                                    currentTime in 16f..30f && !isAnimation3Played -> {
                                         AnimationManager.showLottieAnimation(R.raw.heart_bad3, 30)
+                                        isAnimation3Played = true // 애니메이션이 재생되었다고 표시
+                                    }
+                                    currentTime in 31f..45f && !isAnimation2Played -> {
+                                        AnimationManager.showLottieAnimation(R.raw.heart_bad2, 30)
                                         isAnimation2Played = true // 애니메이션이 재생되었다고 표시
                                     }
-
-                                    currentTime in 45f..60f && !isAnimation3Played -> {
-                                        AnimationManager.showLottieAnimation(R.raw.heart_good1, 30)
-                                        isAnimation3Played = true // 애니메이션이 재생되었다고 표시
+                                    currentTime in 46f..60f && !isAnimation1Played -> {
+                                        AnimationManager.showLottieAnimation(R.raw.heart_bad1, 30)
+                                        isAnimation1Played = true // 애니메이션이 재생되었다고 표시
                                     }
                                 }
 
@@ -251,6 +244,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                     }
                     data.contains("ST") -> { // 데이터 받기 시작
                         AnimationManager.tickerViewCountDown()
+//                        LineChartManager.flagChange()
                     }
                     data.contains("SF") -> {
                         // 한 라운드 종료 처리
@@ -259,6 +253,7 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
                         isAnimation1Played = false
                         isAnimation2Played = false
                         isAnimation3Played = false
+                        isAnimation4Played = false
                         processingData = false
                         // 결과 보여주기
                         ResultBottomSheetManager().showBottomSheet(parentFragmentManager)
@@ -284,8 +279,6 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
             LineChartManager.updateLineChart()
         }
     }
-
-
     //
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -293,17 +286,9 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 
     }
 
-
-
-
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
-
-
-
 
         // Initialize our background executor
         backgroundExecutor = Executors.newSingleThreadExecutor()
@@ -442,5 +427,22 @@ class CameraFragment : Fragment(), PoseLandmarkerHelper.LandmarkerListener{
 //                )
             }
         }
+    }
+
+    private fun goToAnotherActivity() {
+        // 현재 프래그먼트를 종료
+        fragmentManager?.beginTransaction()?.remove(this)?.commit()
+
+        // 새 액티비티 시작을 위한 인텐트 생성
+        val intent = Intent(activity, StepProgressActivity::class.java)
+
+        // 옵션으로, 인텐트에 데이터 추가 가능
+         intent.putExtra("stepFlag", "결과")
+
+        // 새 액티비티 시작
+        startActivity(intent)
+
+        // (선택사항) 현재 호스팅 액티비티 종료
+        activity?.finish()
     }
 }

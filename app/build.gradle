@@ -202,10 +202,9 @@ dependencies {
     implementation 'com.jawnnypoo:physicslayout:3.0.1'
 //    implementation 'com.github.takusemba:spotlight:2.0.5'
 //    implementation 'com.github.igalata:Bubble-Picker:v0.2.4'
-//    implementation 'io.github.shashank02051997:FancyToast:2.0.2'
     implementation "com.github.lisawray.groupie:groupie:2.10.1"
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.0'
 
     // fading text
@@ -217,5 +216,6 @@ dependencies {
 
     implementation 'com.github.anastr:speedviewlib:1.6.1'
 
+    implementation 'com.gelitenight.waveview:waveview:1.0.0'
 
 }

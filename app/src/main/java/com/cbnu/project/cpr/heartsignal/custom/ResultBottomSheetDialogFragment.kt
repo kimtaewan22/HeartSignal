@@ -1,5 +1,7 @@
 package com.cbnu.project.cpr.heartsignal.custom
 
+import android.animation.ObjectAnimator
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +12,8 @@ import androidx.databinding.DataBindingUtil
 import com.cbnu.project.cpr.heartsignal.R
 import com.cbnu.project.cpr.heartsignal.databinding.LayoutResultBottomSheetBinding
 import com.cbnu.project.cpr.heartsignal.manager.chartmanager.LineChartManager
+import com.cbnu.project.cpr.heartsignal.manager.soundmanager.AnimationManager
+import com.cbnu.project.cpr.heartsignal.step.StepProgressActivity
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
@@ -23,9 +27,13 @@ import java.util.Collections
 
 class ResultBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private lateinit var binding:LayoutResultBottomSheetBinding
+    var compressionCount = ""
+    var compressionSuccessCount = ""
     // Bundle에서 데이터를 가져오기 위한 key
     companion object {
         const val DATA_KEY = "DATA_KEY"
+
+
 
         fun newInstance(dataSet: ArrayList<Entry>): ResultBottomSheetDialogFragment {
             val fragment = ResultBottomSheetDialogFragment()
@@ -38,8 +46,22 @@ class ResultBottomSheetDialogFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // BottomSheetDialog의 상태를 STATE_EXPANDED로 설정
-        (dialog as? BottomSheetDialog)?.behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+//        (dialog as? BottomSheetDialog)?.behavior?.peekHeight = (resources.displayMetrics.heightPixels * 0.75).toInt()
+//        // BottomSheetDialog의 상태를 STATE_EXPANDED로 설정
+//        (dialog as? BottomSheetDialog)?.behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+
+        // dialog를 BottomSheetDialog로 캐스팅
+        val bottomSheetDialog = dialog as? BottomSheetDialog
+
+        // dialog의 bottomSheet을 가져옴
+        val bottomSheet = bottomSheetDialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        val behavior = bottomSheet?.let { BottomSheetBehavior.from(it) }
+        // 높이를 원하는 만큼 설정. 예를 들어, 스크린 높이의 3/4로 설정
+        behavior?.peekHeight = (resources.displayMetrics.heightPixels)
+        // 상태를 STATE_EXPANDED로 설정
+        behavior?.state = BottomSheetBehavior.STATE_EXPANDED
+
+
     }
 
     override fun onCreateView(
@@ -59,16 +81,17 @@ class ResultBottomSheetDialogFragment : BottomSheetDialogFragment() {
         binding.resultCloseButton.setOnClickListener {  // 이 ID는 레이아웃 파일의 ImageView ID와 일치해야 합니다.
             dismiss()
             LineChartManager.resetTotalDataset()
-
+            AnimationManager.updateData()
+            goToAnotherActivity()
         }
-
         val dataSet = arguments?.getParcelableArrayList<Entry>(DATA_KEY)
         dataSet?.let {
             setupLineChart()
             drawGraph(it)
         }
-
-
+        setupCompressionCountText()
+        setupCompressionSuccessCountText()
+        setUpSuccessProgressBar()
         return binding.root
     }
 
@@ -92,7 +115,6 @@ class ResultBottomSheetDialogFragment : BottomSheetDialogFragment() {
             description.isEnabled = false
             legend.isEnabled = false
             isAutoScaleMinMaxEnabled = false
-
 
             axisLeft.apply {
                 setDrawGridLines(false)
@@ -127,9 +149,41 @@ class ResultBottomSheetDialogFragment : BottomSheetDialogFragment() {
                 position = XAxis.XAxisPosition.BOTTOM
                 setCenterAxisLabels(true)
                 // x축의 범위를 업데이트합니다.
-
             }
-
         }
+    }
+
+    private fun setupCompressionCountText() {
+        binding.compressionCount.text = "압박 시도 횟수: $compressionCount"
+        binding.compressionCount.textSize = 22f
+    }
+
+    private fun setupCompressionSuccessCountText() {
+        binding.compressionSuccessCount.text = "압박 성공 횟수: $compressionSuccessCount"
+        binding.compressionSuccessCount.textSize = 22f
+    }
+
+    private fun setUpSuccessProgressBar() {
+        ObjectAnimator.ofInt(binding.resultProgressBarStep, "progress", ((compressionCount.toFloat() / compressionSuccessCount.toFloat()).toInt() * 100))
+            .setDuration(500) // 500ms 동안 지속
+            .start()
+
+    }
+
+    private fun goToAnotherActivity() {
+        // 현재 프래그먼트를 종료
+        fragmentManager?.beginTransaction()?.remove(this)?.commit()
+
+        // 새 액티비티 시작을 위한 인텐트 생성
+        val intent = Intent(activity, StepProgressActivity::class.java)
+
+        // 옵션으로, 인텐트에 데이터 추가 가능
+        intent.putExtra("stepFlag", "결과")
+
+        // 새 액티비티 시작
+        startActivity(intent)
+
+        // (선택사항) 현재 호스팅 액티비티 종료
+        activity?.finish()
     }
 }

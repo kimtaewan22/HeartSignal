@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- ProgressBar의 배경, 옅은 보라색으로 설정 -->
+    <item android:id="@android:id/background">
+        <shape>
+            <corners android:radius="40dp" />
+            <gradient
+            android:centerColor="#D1C4E9"
+            android:endColor="#C5CAE9"
+            android:angle="270" />
+        </shape>
+    </item>
+    <!-- ProgressBar의 진행 표시 바, 진한 보라색 계열로 설정 -->
+    <item android:id="@android:id/progress">
+        <clip android:clipOrientation="vertical" android:gravity="bottom">
+            <shape>
+                <corners android:radius="40dp" />
+                <gradient
+                    android:startColor="#7C4DFF"
+                android:centerColor="#673AB7"
+                android:endColor="#5E35B1"
+                android:angle="270" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>
