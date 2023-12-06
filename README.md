@@ -78,7 +78,11 @@
 
 1. Speech Recognition
 2. Chest Compressions(with The correct angle of the arm) 
-3. small quize
+
+### DEMO
+
+https://github.com/kimtaewan22/HeartSignal/assets/85469656/1f66a831-b044-4b79-8d08-77625fa0c670
+
 
 
 
